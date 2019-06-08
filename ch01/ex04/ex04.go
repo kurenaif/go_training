@@ -3,13 +3,19 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"sort"
 )
 
+var out io.Writer = os.Stdout
+
 func main() {
+	outputCountLines(os.Args[1:])
+}
+
+func outputCountLines(files []string) {
 	counts := make(map[string]map[string]int)
-	files := os.Args[1:]
 	if len(files) == 0 {
 		countLines(os.Stdin, counts)
 	} else {
@@ -43,8 +49,8 @@ func main() {
 			message += fmt.Sprintf("%s\t%s\t%d\n", line, filename, count)
 		}
 		if countSum > 1 {
-			fmt.Println("-----"+line+"(sum:", countSum, ")-----")
-			fmt.Print(message)
+			fmt.Fprintln(out, line+"(sum:", countSum, "):")
+			fmt.Fprint(out, message)
 		}
 	}
 }
