@@ -1,0 +1,8 @@
+0.04s	  38427	https://www.pixiv.net/
+0.05s	   6483	https://earth.google.com/web/
+0.06s	  13859	http://www.in2white.com/
+0.06s	  28574	http://kurenaif.html.xdomain.jp/hanahudagd2/
+0.07s	 106866	https://www.nicovideo.jp/
+0.15s	 301526	https://twitter.com/
+1.07s	2278556	http://ksnctf.sweetduet.info/log
+1.07s elapced
