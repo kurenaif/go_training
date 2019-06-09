@@ -12,7 +12,7 @@ import (
 func main() {
 	file, err := os.Create("out1.txt")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "create file: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ex10: %v\n", err)
 		os.Exit(1)
 	}
 	start := time.Now()
@@ -21,7 +21,7 @@ func main() {
 
 	file, err = os.Create("out2.txt")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "create file: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ex10: %v\n", err)
 		os.Exit(1)
 	}
 	start = time.Now()
