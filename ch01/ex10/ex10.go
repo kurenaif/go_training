@@ -31,10 +31,10 @@ func main() {
 
 func fetchAll(writer io.Writer, urls []string) {
 	ch := make(chan string)
-	for _, url := range os.Args[1:] {
+	for _, url := range urls {
 		go fetch(url, ch)
 	}
-	for range os.Args[1:] {
+	for range urls {
 		fmt.Fprintln(writer, <-ch)
 	}
 }
