@@ -22,7 +22,7 @@ func outputCountLines(files []string) {
 		for _, arg := range files {
 			f, err := os.Open(arg)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "dup2: %v\n", err)
+				fmt.Fprintf(os.Stderr, "ex04: %v\n", err)
 				continue
 			}
 			countLines(f, counts)
