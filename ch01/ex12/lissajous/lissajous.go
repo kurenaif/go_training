@@ -14,7 +14,6 @@ var palette = []color.Color{color.Black}
 const (
 	backGroundIndex = 0
 	lineIndex       = 1
-	cycles          = 5
 	res             = 0.001
 	size            = 100
 	nframes         = 64
@@ -28,15 +27,15 @@ func init() {
 }
 
 // ex06と共通化したい
-func Lissajous(out io.Writer) {
+func Lissajous(out io.Writer, cycles int) {
 	freq := rand.Float64() * 3.0
 	anim := gif.GIF{LoopCount: nframes}
 	phase := 0.0
 	for i := 0; i < nframes; i++ {
 		rect := image.Rect(0, 0, 2*size+1, 2*size+1)
 		img := image.NewPaletted(rect, palette)
-		for t := 0.0; t < cycles*2.0*math.Pi; t += res {
-			rate := t / (cycles * 2.0 * math.Pi)
+		for t := 0.0; t < float64(cycles)*2.0*math.Pi; t += res {
+			rate := t / (float64(cycles) * 2.0 * math.Pi)
 			frameRate := float64(i) / nframes * float64(len(palette)-1)
 			index := uint8((int(float64(len(palette)-1)*rate)+int(frameRate))%len(palette) + 1)
 			// fmt.Println(index)
