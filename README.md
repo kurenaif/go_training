@@ -21,7 +21,10 @@ $ go test -v # (ファイル名なし)
 
 firefoxとcurlでは `/count` は正常に動作したが、chromeでのみ、 `/count` にアクセスするたびにcountがインクリメントされていった。
 
+環境: ubuntu18.10, chrome Version 74.0.3729.131 (Official Build) (64-bit)
+
 原因: chromeはアクセスするたびに `favicon.ico` を取りに行くため
+
 
 ## 質問queue
 
