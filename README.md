@@ -25,6 +25,10 @@ firefoxとcurlでは `/count` は正常に動作したが、chromeでのみ、 `
 
 原因: chromeはアクセスするたびに `favicon.ico` を取りに行くため
 
+### p.23 server2
+
+スラッシュで終わっているハンドラのパターンはそのパターンを接頭辞として持つすべてのURLに一致する。: `count/` とかくと、`count/xxx` などもすべて `counter()`が呼ばれる
+
 
 ## 質問queue
 
