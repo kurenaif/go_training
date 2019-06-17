@@ -1,4 +1,4 @@
-package lengthconv
+package weightconv
 
 import (
 	"fmt"
@@ -11,17 +11,18 @@ const (
 	EPS float64 = 1e-6
 )
 
-func TestMToF(t *testing.T) {
+func TestKToP(t *testing.T) {
 	var tests = []struct {
-		meter Meter
-		want  Feet
+		kilogram Kilogram
+		want     Pounds
 	}{
-		{Meter(1), Feet(3.28084)},
+		// 1/0.45359237で計算
+		{Kilogram(1.0), Pounds(2.20462262185)},
 	}
 
 	for _, test := range tests {
-		descr := fmt.Sprintf("MToF(%s)", test.meter)
-		got := MToF(test.meter)
+		descr := fmt.Sprintf("KToP(%s)", test.kilogram)
+		got := KToP(test.kilogram)
 		diff := got - test.want
 		if math.Abs(float64(diff)) > EPS {
 			t.Errorf("%s = %s, want %s", descr, got, test.want)
@@ -29,17 +30,17 @@ func TestMToF(t *testing.T) {
 	}
 }
 
-func TestFToM(t *testing.T) {
+func TestPToK(t *testing.T) {
 	var tests = []struct {
-		feet Feet
-		want Meter
+		pounds Pounds
+		want   Kilogram
 	}{
-		{Feet(1), Meter(0.3048)},
+		{Pounds(1), Kilogram(0.45359237)},
 	}
 
 	for _, test := range tests {
-		descr := fmt.Sprintf("FToM(%s)", test.feet)
-		got := FToM(test.feet)
+		descr := fmt.Sprintf("PToK(%s)", test.pounds)
+		got := PToK(test.pounds)
 		diff := got - test.want
 		if math.Abs(float64(diff)) > EPS {
 			t.Errorf("%s = %s, want %s", descr, got, test.want)

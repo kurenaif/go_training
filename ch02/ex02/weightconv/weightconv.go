@@ -2,8 +2,8 @@ package weightconv
 
 import "fmt"
 
-type Meter float64
-type Feet float64
+type Kilogram float64
+type Pounds float64
 
-func (m Meter) String() string { return fmt.Sprintf("%g m", m) }
-func (f Feet) String() string  { return fmt.Sprintf("%g ft", f) }
+func (k Kilogram) String() string { return fmt.Sprintf("%g kg", k) }
+func (p Pounds) String() string   { return fmt.Sprintf("%g lb", p) }

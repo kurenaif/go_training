@@ -1,7 +1,7 @@
 package weightconv
 
-// convert meter 2 feet
-func MToF(m Meter) Feet { return Feet(m * 1200 / 3937) }
+// convert kilogram 2 pounds
+func KToP(k Kilogram) Pounds { return Pounds(k / 0.45359237) }
 
-// convert feet 2 meter
-func FToM(f Feet) Meter { return Meter(f * 3937 / 1200) }
+// convert pounds 2 kilogram
+func PToK(f Pounds) Kilogram { return Kilogram(f * 0.45359237) }
