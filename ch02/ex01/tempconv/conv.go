@@ -1,19 +1,19 @@
 package tempconv
 
-// convert Celsius 2 Fahrenheit
+// convert Celsius to Fahrenheit
 func CToF(c Celsius) Fahrenheit { return Fahrenheit(c*9/5 + 32) }
 
-// convert Fahrenheit 2 Celsius
+// convert Fahrenheit to Celsius
 func FToC(f Fahrenheit) Celsius { return Celsius((f - 32) * 5 / 9) }
 
-// convert Kelvin 2 Celsius
+// convert Kelvin to Celsius
 func KToC(k Kelvin) Celsius { return Celsius(k - FreezingK) }
 
-// convert Celsius 2 Kelvin
+// convert Celsius to Kelvin
 func CToK(c Celsius) Kelvin { return Kelvin(c - AbosoluteZeroC) }
 
-// convert Kelvin 2 Fahrenheit
+// convert Kelvin to Fahrenheit
 func KToF(k Kelvin) Fahrenheit { return CToF(KToC(k)) }
 
-// convert Fahrenheit 2 Kelvin
+// convert Fahrenheit to Kelvin
 func FToK(f Fahrenheit) Kelvin { return CToK(FToC(f)) }
