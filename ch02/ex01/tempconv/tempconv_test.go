@@ -8,7 +8,7 @@ import (
 
 // 絶対誤差1e-6まで許容
 const (
-	EPS float64 = 0.000001
+	EPS float64 = 1e-06
 )
 
 func TestCToF(t *testing.T) {
