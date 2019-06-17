@@ -51,7 +51,7 @@ func TestFToC(t *testing.T) {
 	}
 }
 
-func TestKtoC(t *testing.T) {
+func TestKToC(t *testing.T) {
 	var tests = []struct {
 		kelvin Kelvin
 		want   Celsius
