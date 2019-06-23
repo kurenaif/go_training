@@ -8,6 +8,8 @@ import (
 	"testing"
 )
 
+// benchmark
+
 // 1のケース後半の演習の比較用
 func BenchmarkPopCount11(b *testing.B) {
 	// 二進数リテラルはないためParseUintで代用 0xFFFFでもよかった…？
