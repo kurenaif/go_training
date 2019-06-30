@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"sync"
 
-	"./lissajous"
+	"go_training/ch01/ex06/lissajous"
 )
 
 var mu sync.Mutex
