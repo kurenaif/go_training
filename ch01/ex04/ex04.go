@@ -30,8 +30,6 @@ func outputCountLines(files []string) {
 		}
 	}
 
-	// mapを直に使用すると、hashTableのため、順番がバラバラになってテストがつらい
-	// 出力はkeyの昇順で固定 O(N|S|log(N))
 	keys := make([]string, 0, len(counts))
 	for k := range counts {
 		keys = append(keys, k)
