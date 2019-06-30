@@ -26,7 +26,6 @@ func init() {
 	}
 }
 
-// ex06と共通化したい
 func Lissajous(out io.Writer, cycles int) {
 	freq := rand.Float64() * 3.0
 	anim := gif.GIF{LoopCount: nframes}
@@ -34,11 +33,15 @@ func Lissajous(out io.Writer, cycles int) {
 	for i := 0; i < nframes; i++ {
 		rect := image.Rect(0, 0, 2*size+1, 2*size+1)
 		img := image.NewPaletted(rect, palette)
-		for t := 0.0; t < float64(cycles)*2.0*math.Pi; t += res {
-			rate := t / (float64(cycles) * 2.0 * math.Pi)
-			frameRate := float64(i) / nframes * float64(len(palette)-1)
-			index := uint8((int(float64(len(palette)-1)*rate)+int(frameRate))%len(palette) + 1)
-			// fmt.Println(index)
+
+		endTime := float64(cycles) * 2.0 * math.Pi
+		for t := 0.0; t < endTime; t += res {
+			// 全体のうち、どれくらいの時間をプロットしたか
+			timeRate := t / endTime
+			// 全体のうち、どれくらいのフレームをプロットしたか
+			// frameRate := float64(i) / nframes
+			// 切り捨てすると、最後の要素が使われなくなるので+1する
+			index := uint8(timeRate * float64(len(palette)+1))
 			x := math.Sin(t)
 			y := math.Sin(t*freq + phase)
 			img.SetColorIndex(size+int(x*size+0.5), size+int(y*size+0.5), index)
