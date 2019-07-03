@@ -22,3 +22,7 @@ BenchmarkEchoJoin100_1-8     	 2000000	       959 ns/op	     416 B/op	       2 a
 * 配列の長さ、文字列の長さ両方に依存？
 * Joinに比べ、Forのほうがメモリ割り当て回数が圧倒的に少ないので早い？
 * 配列の長さ1,文字列の長さ100のケースで差がでた要因が謎 sepにスペースを代入しているせい？
+* 参考実装: join https://golang.org/src/strings/strings.go?s=10789:10829#L415
+* 参考実装: concatstring: https://github.com/golang/go/blob/master/src/runtime/string.go#L23
+* joinは配列の長さが1ならそのままreturnする仕様になっていた
+* +はそうではないので、要素数1はその違い？

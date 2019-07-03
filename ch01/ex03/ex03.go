@@ -23,4 +23,6 @@ func EchoJoin(args []string) {
 }
 
 func main() {
+	EchoFor([]string{"hello"})
+	EchoJoin([]string{"hello"})
 }
