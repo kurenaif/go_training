@@ -6,15 +6,18 @@
     * e.g.) 2_3ならば ["aaa", "aaa"]
 
 ```
-go test -bench=. -test.benchmem
++ go test -bench=. -test.benchmem
 goos: linux
 goarch: amd64
-BenchmarkEchoFor100_100-8    	   20000	     88725 ns/op	  540720 B/op	      99 allocs/op
-BenchmarkEchoJoin100_100-8   	  300000	      4203 ns/op	   20480 B/op	       2 allocs/op
-BenchmarkEchoFor1_100-8      	100000000	        12.3 ns/op	       0 B/op	       0 allocs/op
-BenchmarkEchoJoin1_100-8     	300000000	         4.83 ns/op	       0 B/op	       0 allocs/op
-BenchmarkEchoFor100_1-8      	  200000	      7895 ns/op	   10768 B/op	      99 allocs/op
-BenchmarkEchoJoin100_1-8     	 2000000	       959 ns/op	     416 B/op	       2 allocs/op
+pkg: go_training/ch01/ex03
+BenchmarkEchoFor100_100-8    	   10000	    120372 ns/op	  540720 B/op	      99 allocs/op
+BenchmarkEchoJoin100_100-8   	  300000	      5944 ns/op	   20480 B/op	       2 allocs/op
+BenchmarkEchoFor1_100-8      	100000000	        12.1 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEchoJoin1_100-8     	300000000	         4.82 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEchoFor100_1-8      	  200000	      8744 ns/op	   10768 B/op	      99 allocs/op
+BenchmarkEchoJoin100_1-8     	 2000000	       951 ns/op	     416 B/op	       2 allocs/op
+PASS
+ok  	go_training/ch01/ex03	10.897s
 ```
 
 ## 所感

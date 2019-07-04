@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -8,21 +9,20 @@ import (
 
 var out io.Writer = os.Stdout
 
-func EchoFor(args []string) {
+func EchoFor(args []string) string {
 	s, sep := "", ""
 	for _, arg := range args {
 		s += sep + arg
 		sep = " "
 	}
-	// fmt.Println(s)
+	return s
 }
 
-func EchoJoin(args []string) {
-	strings.Join(args, " ")
-	// fmt.Fprintln(out, s)
+func EchoJoin(args []string) string {
+	return strings.Join(args, " ")
 }
 
 func main() {
-	EchoFor([]string{"hello"})
-	EchoJoin([]string{"hello"})
+	fmt.Println(EchoFor([]string{"hello", "world"}))
+	fmt.Println(EchoJoin([]string{"hello", "world"}))
 }
