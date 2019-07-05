@@ -14,14 +14,18 @@ import (
 // PopCount
 // --------------------------------------------------------------------------------
 
+var result int
+
 // 1のケース後半の演習の比較用
 func BenchmarkPopCount11(b *testing.B) {
 	// 二進数リテラルはないためParseUintで代用 0xFFFFでもよかった…？
 	num, _ := strconv.ParseUint("1111111111111111111111111111111111111111111111111111111111111111", 2, 0)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcount.PopCount(num)
+		temp += popcount.PopCount(num)
 	}
+	result = temp
 }
 
 // 0のケース後半の演習の比較用

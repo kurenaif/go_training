@@ -7,9 +7,9 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"go_training/ch02/ex01/tempconv"
-	"go_training/ch02/ex02/lengthconv"
-	"go_training/ch02/ex02/weightconv"
+	"github.com/kurenaif/go_training/ch02/ex01/tempconv"
+	"github.com/kurenaif/go_training/ch02/ex02/lengthconv"
+	"github.com/kurenaif/go_training/ch02/ex02/weightconv"
 	"os"
 	"strconv"
 	"strings"
