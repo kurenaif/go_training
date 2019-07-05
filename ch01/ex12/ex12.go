@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
+	"go_training/ch01/ex06/lissajous"
 	"log"
 	"net/http"
 	"strconv"
 	"sync"
-
-	"go_training/ch01/ex06/lissajous"
 )
 
 var mu sync.Mutex
