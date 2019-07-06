@@ -3,17 +3,20 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io"
+	"log"
 	"math"
+	"net/http"
 	"os"
 )
 
-const (
-	width, height = 600, 320            // canvas size in pixels
-	cells         = 100                 // number of grid cells
-	xyrange       = 20.0                // axis ranges (-xyrange..+xyrange)
-	xyscale       = width / 2 / xyrange // pixels per x or y unit
-	zscale        = height * 0.1        // pixels per z unit
-	angle         = math.Pi / 6         // angle of x, y axes (=30°)
+var (
+	width, height = 600, 320                       // canvas size in pixels
+	cells         = 100                            // number of grid cells
+	xyrange       = 20.0                           // axis ranges (-xyrange..+xyrange)
+	xyscale       = float64(width) / 2.0 / xyrange // pixels per x or y unit
+	zscale        = float64(height) * 0.1          // pixels per z unit
+	angle         = math.Pi / 6                    // angle of x, y axes (=30°)
 )
 
 var sin30, cos30 = math.Sin(angle), math.Cos(angle) // sin(30°), cos(30°)
@@ -27,7 +30,15 @@ func average(vs []float64) float64 {
 }
 
 func main() {
-	fmt.Printf("<svg xmlns='http://www.w3.org/2000/svg' "+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "image/svg+xml")
+		plot3d(w)
+	})
+	log.Fatal(http.ListenAndServe("localhost:8000", nil))
+}
+
+func plot3d(out io.Writer) {
+	fmt.Fprintf(out, "<svg xmlns='http://www.w3.org/2000/svg' "+
 		"style='stroke: grey; fill: white; stroke-width: 0.7' "+
 		"width='%d' height='%d'>", width, height)
 	points := [][]float64{}
@@ -74,19 +85,20 @@ func main() {
 		dx := point[6]
 		dy := point[7]
 		z := point[8]
-		fmt.Printf("<polygon points='%g,%g %g,%g %g,%g %g,%g' fill=%s/>\n",
+		fmt.Fprintf(out, "<polygon points='%g,%g %g,%g %g,%g %g,%g' fill=%s/>\n",
 			ax, ay, bx, by, cx, cy, dx, dy, getColor((z-zmin)/(zmax-zmin)))
 	}
 
-	fmt.Println("</svg>")
+	fmt.Fprintln(out, "</svg>")
+
 }
 
 // 変換後のx, 変換後のy, 変換前のz, エラーを返す
 // zは二次元投影する前の座標なので注意！(色付け用)
 func corner(i, j int) (float64, float64, float64, error) {
 	// Find point (x,y) at corner of cell (i,j).
-	x := xyrange * (float64(i)/cells - 0.5)
-	y := xyrange * (float64(j)/cells - 0.5)
+	x := xyrange * (float64(i)/float64(cells) - 0.5)
+	y := xyrange * (float64(j)/float64(cells) - 0.5)
 
 	// Compute surface height z.
 	z := f(x, y)
@@ -96,8 +108,8 @@ func corner(i, j int) (float64, float64, float64, error) {
 	}
 
 	// Project (x,y,z) isometrically onto 2-D SVG canvas (sx,sy).
-	sx := width/2 + (x-y)*cos30*xyscale
-	sy := height/2 + (x+y)*sin30*xyscale - z*zscale
+	sx := float64(width)/2 + float64(x-y)*cos30*xyscale
+	sy := float64(height)/2 + float64(x+y)*sin30*xyscale - z*zscale
 	return sx, sy, z, nil
 }
 
