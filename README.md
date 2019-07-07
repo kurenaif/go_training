@@ -49,3 +49,5 @@ firefoxとcurlでは `/count` は正常に動作したが、chromeでのみ、 `
 * 演習問題4.14: 一回のアクセスでデータを持っておいてなんかする
 
 ## 質問queue
+
+* p.70 なぜcolor.RGBA{}とcolor.RGBA()でbit数が違うのか
