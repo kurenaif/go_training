@@ -28,38 +28,6 @@ func main() {
 	png.Encode(os.Stdout, img) // NOTE: ignoring errors
 }
 
-func averageColors(colors []color.Color) color.Color {
-	var rsum, gsum, bsum uint32
-
-	for _, color := range colors {
-		r, g, b, _ := color.RGBA()
-		rsum += r
-		gsum += g
-		bsum += b
-	}
-
-	r := rsum / uint32(len(colors))
-	g := gsum / uint32(len(colors))
-	b := bsum / uint32(len(colors))
-	return color.NRGBA{uint8(r), uint8(g), uint8(b), 255}
-}
-
-func mandelbrot(z complex128) color.Color {
-	const iterations = 200
-	const contrast = 15
-
-	var v complex128
-	for n := uint8(0); n < iterations; n++ {
-		v = v*v + z
-		if cmplx.Abs(v) > 2 {
-			return color.RGBA{0, 0, 255 - contrast*n, 255}
-		}
-	}
-	return color.Black
-}
-
-//!-
-
 // Some other interesting functions:
 
 func acos(z complex128) color.Color {
