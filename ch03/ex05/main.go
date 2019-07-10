@@ -4,11 +4,16 @@ import (
 	"image"
 	"image/color"
 	"image/png"
+	"io"
 	"math/cmplx"
 	"os"
 )
 
 func main() {
+	makeImage(os.Stdout)
+}
+
+func makeImage(out io.Writer) {
 	const (
 		xmin, ymin, xmax, ymax = -2, -2, +2, +2
 		width, height          = 1024, 1024
@@ -24,7 +29,7 @@ func main() {
 			img.Set(px, py, mandelbrot(z))
 		}
 	}
-	png.Encode(os.Stdout, img) // NOTE: ignoring errors
+	png.Encode(out, img) // NOTE: ignoring errors
 }
 
 func mandelbrot(z complex128) color.Color {
