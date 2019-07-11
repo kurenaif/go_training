@@ -27,7 +27,6 @@ func main() {
 	for py := 0; py < height; py++ {
 		y := float64(py)/height*(ymax-ymin) + ymin
 		for px := 0; px < width; px++ {
-			println(px, py)
 			x := float64(px)/width*(xmax-xmin) + xmin
 			// Image point (px, py) represents complex value z.
 			img128.Set(px, py, mandelbrot128(x, y))
