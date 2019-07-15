@@ -51,3 +51,4 @@ firefoxとcurlでは `/count` は正常に動作したが、chromeでのみ、 `
 ## 質問queue
 
 * p.70 なぜcolor.RGBA{}とcolor.RGBA()でbit数が違うのか
+* p.88 constは大きな値を持てると書いているが、JAVAなどで見られるBigInteger相当の実装なのか？ 多用するとコンパイルが遅くなるのか？
