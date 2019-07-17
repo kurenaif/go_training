@@ -76,7 +76,8 @@ func reverse(bs []byte) {
 		}
 	}
 
-	// lSpace= 2, rSpace = 4, lSize = 3, rSize = 3みたいなケースもある
+	// lSpace= 2, rSpace = 4, lSize = 3, rSize = 3みたいなケースもあり
+	// lSpace= 2, rSpace = 1, lSize = 0, rSize = 3になるケースが考えられる
 	if rSize != 0 {
 		_ = utf8.EncodeRune(bs[lIndex:], rR) // => rSize
 		lIndex += rSize
