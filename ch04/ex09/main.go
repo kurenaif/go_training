@@ -7,7 +7,9 @@ import (
 )
 
 func main() {
-	countWords("test.txt")
+	for i := 1; i < len(os.Args); i++ {
+		countWords(os.Args[i])
+	}
 }
 
 func countWords(path string) {
