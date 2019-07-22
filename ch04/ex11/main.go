@@ -22,7 +22,7 @@ type CreateIssue struct {
 
 const CreateIssueURL = "https://api.github.com/repos/kurenaif/go_training/issues"
 
-func openEditor(editor string) ([]byte, error) {
+func openEditor(editor string) (string, error) {
 	path := os.TempDir() + "/temp"
 	tempF, err := os.Create(path)
 	if err != nil {
@@ -36,22 +36,19 @@ func openEditor(editor string) ([]byte, error) {
 	cmd.Stderr = os.Stderr
 	err = cmd.Start()
 	if err != nil {
-		return []byte{}, err
+		return "", err
 	}
 	err = cmd.Wait()
 	if err != nil {
-		return []byte{}, err
+		return "", err
 	}
 
-	readF, err := os.Open(path)
+	resByte, err := ioutil.ReadFile(path)
 	if err != nil {
-		return []byte{}, err
+		return "", err
 	}
-	res, err := ioutil.ReadAll(readF)
-	if err != nil {
-		return []byte{}, err
-	}
-	return res, nil
+
+	return strings.TrimRight(string(resByte), "\n"), nil
 }
 
 func createIssue(token string, issue CreateIssue) error {
@@ -83,35 +80,76 @@ func createIssue(token string, issue CreateIssue) error {
 	return nil
 }
 
-func messageAndInput(message string) string {
+func messageAndInput(message string) (string, error) {
 	fmt.Print(message)
 	s := bufio.NewScanner(os.Stdin)
 	s.Scan()
-	return s.Text()
+	res := s.Text()
+	if res == "EDITOR" {
+		r, err := openEditor(os.Getenv("EDITOR"))
+		if err != nil {
+			return "", err
+		}
+		res = string(r)
+	}
+	return res, nil
 }
 
-func createIssueBody() (body CreateIssue) {
-	body.Title = messageAndInput("title: ")
-	body.Body = messageAndInput("body: ")
-	assignees := strings.Split(messageAndInput("asignees(, separated): "), ",")
-	labels := strings.Split(messageAndInput("labels(, separated): "), ",")
+func createIssueBody() (CreateIssue, error) {
+	body := CreateIssue{}
+
+	title, err := messageAndInput("title: ")
+	if err != nil {
+		return CreateIssue{}, err
+	}
+	body.Title = title
+
+	body.Body, err = messageAndInput("body: ")
+	if err != nil {
+		return CreateIssue{}, err
+	}
+
+	body.Title = title
+	input, err := messageAndInput("asignees(, separated): ")
+	if err != nil {
+		return CreateIssue{}, err
+	}
+	assignees := strings.Split(input, ",")
 	for _, assignee := range assignees {
 		if assignee != "" {
 			body.Assignees = append(body.Assignees, assignee)
 		}
 	}
+
+	input, err = messageAndInput("labels(, separated): ")
+	labels := strings.Split(input, ",")
 	for _, label := range labels {
 		if label != "" {
 			body.Labels = append(body.Labels, label)
 		}
 	}
-	return
+	return body, nil
 }
 
 func main() {
-	s := messageAndInput("[create]>")
+	// editor := os.Getenv("EDITOR")
+	// if editor == "" {
+	// 	editor = "vim"
+	// }
+	// res, _ := openEditor(editor)
+	// fmt.Println(string(res))
+	s, err := messageAndInput("[create]>")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	if s[:1] == "c" {
-		err := createIssue(os.Args[1], createIssueBody())
+		body, err := createIssueBody()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = createIssue(os.Args[1], body)
 		if err != nil {
 			log.Fatal(err)
 		}
