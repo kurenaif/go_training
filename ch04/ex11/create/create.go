@@ -20,7 +20,7 @@ type Issue struct {
 }
 
 func CreateIssue(token string) error {
-	issue, err := createIssueBody()
+	issue, err := CreateIssueBody()
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func CreateIssue(token string) error {
 	return nil
 }
 
-func createIssueBody() (Issue, error) {
+func CreateIssueBody() (Issue, error) {
 	body := Issue{}
 
 	title, err := ghutil.MessageAndInput("title: ")
