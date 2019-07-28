@@ -1,0 +1,221 @@
+
+<h1>47560 issues</h1>
+<table>
+<tr style='text-align: left'>
+  <th>#</th>
+  <th>State</th>
+  <th>User</th>
+  <th>Title</th>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang-nursery/futures-rs/pull/1753'>1753</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/taiki-e'>taiki-e</a></td>
+  <td><a href='https://github.com/rust-lang-nursery/futures-rs/pull/1753'>Elide lifetimes in `Pin&lt;&amp;mut Self&gt;`</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/rust/pull/63059'>63059</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/Centril'>Centril</a></td>
+  <td><a href='https://github.com/rust-lang/rust/pull/63059'>Make `#![feature(bind_by_move_pattern_guards)]` sound without `#[feature(nll)]`</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/rust/pull/62727'>62727</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/SimonSapin'>SimonSapin</a></td>
+  <td><a href='https://github.com/rust-lang/rust/pull/62727'>Deprecate using rustc_plugin without the rustc_driver dylib.</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/miri/pull/856'>856</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/RalfJung'>RalfJung</a></td>
+  <td><a href='https://github.com/rust-lang/miri/pull/856'>Adjust for ptr_op changes</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/libc/pull/1433'>1433</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/jdm'>jdm</a></td>
+  <td><a href='https://github.com/rust-lang/libc/pull/1433'>Link to Windows debug CRTs when crt-debug target_feature is present.</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/rust/pull/62805'>62805</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/Xanewok'>Xanewok</a></td>
+  <td><a href='https://github.com/rust-lang/rust/pull/62805'>Update RLS</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/rust/pull/63061'>63061</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/Centril'>Centril</a></td>
+  <td><a href='https://github.com/rust-lang/rust/pull/63061'>In which we constantly improve the Vec(Deque) array PartialEq impls</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/rust/pull/62816'>62816</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/estebank'>estebank</a></td>
+  <td><a href='https://github.com/rust-lang/rust/pull/62816'>Point at type ascription before macro invocation on expansion parse error</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/miri/pull/837'>837</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/RalfJung'>RalfJung</a></td>
+  <td><a href='https://github.com/rust-lang/miri/pull/837'>test arrray try_from (interesting const generic usage)</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/rust/pull/62950'>62950</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/mati865'>mati865</a></td>
+  <td><a href='https://github.com/rust-lang/rust/pull/62950'>Run linkcheck on all platforms</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/sigp/lighthouse/pull/456'>456</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/pawanjay176'>pawanjay176</a></td>
+  <td><a href='https://github.com/sigp/lighthouse/pull/456'>Remove unused dependencies</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/librespot-org/librespot/issues/355'>355</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/zeraien'>zeraien</a></td>
+  <td><a href='https://github.com/librespot-org/librespot/issues/355'>unable to build due to broken dependency: rand </a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/rustfmt/issues/3686'>3686</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/topecongiro'>topecongiro</a></td>
+  <td><a href='https://github.com/rust-lang/rustfmt/issues/3686'>New syntax in rustfmt 1.4.0</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang-nursery/reference/pull/635'>635</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/nikomatsakis'>nikomatsakis</a></td>
+  <td><a href='https://github.com/rust-lang-nursery/reference/pull/635'>async-await initial reference material</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang-nursery/reference/issues/631'>631</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/ehuss'>ehuss</a></td>
+  <td><a href='https://github.com/rust-lang-nursery/reference/issues/631'>Document type_alias_enum_variants</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/GiantPlantsSociety/diamond/pull/266'>266</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/sergey-melnychuk'>sergey-melnychuk</a></td>
+  <td><a href='https://github.com/GiantPlantsSociety/diamond/pull/266'>Run `cargo fmt`</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/brson/basic-http-server/issues/25'>25</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/brson'>brson</a></td>
+  <td><a href='https://github.com/brson/basic-http-server/issues/25'>GitHub anchors don&#39;t work like GitHub</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang-nursery/futures-rs/issues/1757'>1757</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/SrTobi'>SrTobi</a></td>
+  <td><a href='https://github.com/rust-lang-nursery/futures-rs/issues/1757'>Remove mentioning of default spawners from docs</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/rust/pull/62038'>62038</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/Zoxc'>Zoxc</a></td>
+  <td><a href='https://github.com/rust-lang/rust/pull/62038'>[WIP] Make dep node indices persistent between sessions</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/wg-grammar/issues/62'>62</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/ehuss'>ehuss</a></td>
+  <td><a href='https://github.com/rust-lang/wg-grammar/issues/62'>Swap unsafe/async</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang-nursery/pin-utils/pull/23'>23</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/taiki-e'>taiki-e</a></td>
+  <td><a href='https://github.com/rust-lang-nursery/pin-utils/pull/23'>Support trailing commas in pin_mut! macro</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/book/pull/2032'>2032</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/emmericp'>emmericp</a></td>
+  <td><a href='https://github.com/rust-lang/book/pull/2032'>ci: validate that all used references are defined</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/sublimehq/Packages/pull/2002'>2002</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/willstott101'>willstott101</a></td>
+  <td><a href='https://github.com/sublimehq/Packages/pull/2002'>[Rust] Add u128 and i128 primitive types.</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/diesel-rs/diesel/pull/2108'>2108</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/JohnTitor'>JohnTitor</a></td>
+  <td><a href='https://github.com/diesel-rs/diesel/pull/2108'>Replace ONCE_INIT with Once::new()</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/wg-grammar/issues/43'>43</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/ehuss'>ehuss</a></td>
+  <td><a href='https://github.com/rust-lang/wg-grammar/issues/43'>Add unstable const generics</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/rust-bindgen/issues/1600'>1600</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/glandium'>glandium</a></td>
+  <td><a href='https://github.com/rust-lang/rust-bindgen/issues/1600'>bindgen with rustfmt disabled generates bindings on one line</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/tree-sitter/tree-sitter-rust/issues/45'>45</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/GrayJack'>GrayJack</a></td>
+  <td><a href='https://github.com/tree-sitter/tree-sitter-rust/issues/45'>Parse new macro declarative expression</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/stm32-rs/stm32-rs/pull/266'>266</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/burrbull'>burrbull</a></td>
+  <td><a href='https://github.com/stm32-rs/stm32-rs/pull/266'>normalize-docs</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/ludumipsum/renovate/issues/4'>4</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/pyrrho'>pyrrho</a></td>
+  <td><a href='https://github.com/ludumipsum/renovate/issues/4'>Create a hub.docker.com webhook to rebuild when a new version of Rust is released</a></td>
+</tr>
+
+<tr>
+  <td><a href='https://github.com/rust-lang/unsafe-code-guidelines/issues/181'>181</a></td>
+  <td>open</td>
+  <td><a href='https://github.com/RalfJung'>RalfJung</a></td>
+  <td><a href='https://github.com/rust-lang/unsafe-code-guidelines/issues/181'>Define: Byte</a></td>
+</tr>
+
+</table>
