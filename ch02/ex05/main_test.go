@@ -32,9 +32,11 @@ func BenchmarkPopCount11(b *testing.B) {
 func BenchmarkPopCount00(b *testing.B) {
 	num, _ := strconv.ParseUint("0000000000000000000000000000000000000000000000000000000000000000", 2, 0)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcount.PopCount(num)
+		temp += popcount.PopCount(num)
 	}
+	result = temp
 }
 
 // BenchmarkPopCountRand比較用
@@ -43,10 +45,12 @@ func BenchmarkPopCount00rand(b *testing.B) {
 	num, _ := strconv.ParseUint("0000000000000000000000000000000000000000000000000000000000000000", 2, 0)
 	rand.Seed(1)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcount.PopCount(num)
+		temp += popcount.PopCount(num)
 		rand.Uint64() // 乱数のケースと比較するために乱数生成時間をあえてここで発生させる
 	}
+	result = temp
 }
 
 // 乱数のケース アクセスがバラバラになるので、ちょっと遅くなってほしい 完全な連続アクセスではないので意味はない…？
@@ -55,9 +59,11 @@ func BenchmarkPopCountRand(b *testing.B) {
 	// 暗黙的に1で固定される(https://github.com/golang/go/blob/c8aec4095e089ff6ac50d18e97c3f46561f14f48/src/math/rand/rand.go#L236)が、ここではわかりやすくるために明示的に1で固定
 	rand.Seed(1)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcount.PopCount(rand.Uint64())
+		temp += popcount.PopCount(rand.Uint64())
 	}
+	result = temp
 }
 
 // --------------------------------------------------------------------------------
@@ -68,27 +74,33 @@ func BenchmarkPopCountLoop11(b *testing.B) {
 	// 二進数リテラルはないためParseUintで代用 0xFFFFでもよかった…？
 	num, _ := strconv.ParseUint("1111111111111111111111111111111111111111111111111111111111111111", 2, 0)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcountloop.PopCount(num)
+		temp += popcountloop.PopCount(num)
 	}
+	result = temp
 }
 
 func BenchmarkPopCountLoop00(b *testing.B) {
 	num, _ := strconv.ParseUint("0000000000000000000000000000000000000000000000000000000000000000", 2, 0)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcountloop.PopCount(num)
+		temp += popcountloop.PopCount(num)
 	}
+	result = temp
 }
 
 func BenchmarkPopCountLoop00rand(b *testing.B) {
 	num, _ := strconv.ParseUint("0000000000000000000000000000000000000000000000000000000000000000", 2, 0)
 	rand.Seed(1)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcountloop.PopCount(num)
+		temp += popcountloop.PopCount(num)
 		rand.Uint64() // 乱数のケースと比較するために乱数生成時間をあえてここで発生させる
 	}
+	result = temp
 }
 
 func BenchmarkPopCountLoopRand(b *testing.B) {
@@ -96,9 +108,11 @@ func BenchmarkPopCountLoopRand(b *testing.B) {
 	// 暗黙的に1で固定される(https://github.com/golang/go/blob/c8aec4095e089ff6ac50d18e97c3f46561f14f48/src/math/rand/rand.go#L236)が、ここではわかりやすくるために明示的に1で固定
 	rand.Seed(1)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcountloop.PopCount(rand.Uint64())
+		temp += popcountloop.PopCount(rand.Uint64())
 	}
+	result = temp
 }
 
 // --------------------------------------------------------------------------------
@@ -108,28 +122,34 @@ func BenchmarkPopCountLoopRand(b *testing.B) {
 func BenchmarkPopCountBitShift00(b *testing.B) {
 	num, _ := strconv.ParseUint("0000000000000000000000000000000000000000000000000000000000000000", 2, 0)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcountbitshift.PopCount(num)
+		temp += popcountbitshift.PopCount(num)
 	}
+	result = temp
 }
 
 func BenchmarkPopCountBitShift11(b *testing.B) {
 	// 二進数リテラルはないためParseUintで代用 0xFFFFでもよかった…？
 	num, _ := strconv.ParseUint("1111111111111111111111111111111111111111111111111111111111111111", 2, 0)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcountbitshift.PopCount(num)
+		temp += popcountbitshift.PopCount(num)
 	}
+	result = temp
 }
 
 func BenchmarkPopCountBitShift00rand(b *testing.B) {
 	num, _ := strconv.ParseUint("0000000000000000000000000000000000000000000000000000000000000000", 2, 0)
 	rand.Seed(1)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcountbitshift.PopCount(num)
+		temp += popcountbitshift.PopCount(num)
 		rand.Uint64() // 乱数のケースと比較するために乱数生成時間をあえてここで発生させる
 	}
+	result = temp
 }
 
 func BenchmarkPopCountBitShiftRand(b *testing.B) {
@@ -137,9 +157,11 @@ func BenchmarkPopCountBitShiftRand(b *testing.B) {
 	// 暗黙的に1で固定される(https://github.com/golang/go/blob/c8aec4095e089ff6ac50d18e97c3f46561f14f48/src/math/rand/rand.go#L236)が、ここではわかりやすくるために明示的に1で固定
 	rand.Seed(1)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcountbitshift.PopCount(rand.Uint64())
+		temp += popcountbitshift.PopCount(rand.Uint64())
 	}
+	result = temp
 }
 
 // --------------------------------------------------------------------------------
@@ -149,28 +171,34 @@ func BenchmarkPopCountBitShiftRand(b *testing.B) {
 func BenchmarkPopCountLSB00(b *testing.B) {
 	num, _ := strconv.ParseUint("0000000000000000000000000000000000000000000000000000000000000000", 2, 0)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcountlsb.PopCount(num)
+		temp += popcountlsb.PopCount(num)
 	}
+	result = temp
 }
 
 func BenchmarkPopCountLSB11(b *testing.B) {
 	// 二進数リテラルはないためParseUintで代用 0xFFFFでもよかった…？
 	num, _ := strconv.ParseUint("1111111111111111111111111111111111111111111111111111111111111111", 2, 0)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcountlsb.PopCount(num)
+		temp += popcountlsb.PopCount(num)
 	}
+	result = temp
 }
 
 func BenchmarkPopCountLSB00rand(b *testing.B) {
 	num, _ := strconv.ParseUint("0000000000000000000000000000000000000000000000000000000000000000", 2, 0)
 	rand.Seed(1)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcountlsb.PopCount(num)
+		temp += popcountlsb.PopCount(num)
 		rand.Uint64() // 乱数のケースと比較するために乱数生成時間をあえてここで発生させる
 	}
+	result = temp
 }
 
 func BenchmarkPopCountLSBRand(b *testing.B) {
@@ -178,7 +206,9 @@ func BenchmarkPopCountLSBRand(b *testing.B) {
 	// 暗黙的に1で固定される(https://github.com/golang/go/blob/c8aec4095e089ff6ac50d18e97c3f46561f14f48/src/math/rand/rand.go#L236)が、ここではわかりやすくるために明示的に1で固定
 	rand.Seed(1)
 	b.ResetTimer()
+	temp := 0
 	for i := 0; i < b.N; i++ {
-		popcountlsb.PopCount(rand.Uint64())
+		temp += popcountlsb.PopCount(rand.Uint64())
 	}
+	result = temp
 }
