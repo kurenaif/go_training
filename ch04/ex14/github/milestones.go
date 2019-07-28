@@ -20,8 +20,6 @@ type Milestone struct {
 	Number    int
 }
 
-//!+template
-
 var milestoneList = template.Must(template.New("milestoneList").Funcs(template.FuncMap{"myTime": myTime}).Parse(`
 <table>
 <tr style='text-align: left'>
