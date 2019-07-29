@@ -1,0 +1,288 @@
+    <p>はじめてCTFにチームとして参加しました！！！！！</p>
+<p><a href="https://score.beginners.seccon.jp/teams/173">R19</a> というチームで参加してました！ kurenaifと申します</p>
+<p>常設じゃないCTFはやるのは初めてです！</p>
+<p>知り合いにpwnをひたすら布教されていたので、CTFはpwnだと思っていたのですが、実はCryptoもあり、それが面白そうだったのでチームメイトに俺はCryptoをやるぞーーーー！！！と言ってCryptoだけやりました。</p>
+<p>pwnもやってみたのですが、すべてを忘却していたため頑張って思い出そうと思います。</p>
+<p><code>so_tired.tar.gz</code> が渡されました中身は <code>encrypted.txt</code> だったのですがこれがとても長い…
+<pre class="code lang-sh" data-lang="sh" data-unlink>$ cat encrypted.txt | tr <span class="synSpecial">-d</span> <span class="synStatement">'</span><span class="synConstant">\n</span><span class="synStatement">'</span> | base64 <span class="synSpecial">-d</span>  <span class="synStatement">&gt;</span> src
+<p><code>out</code> を見てみると、よくわからないバイナリですね…
+<pre class="code lang-sh" data-lang="sh" data-unlink>$ file src
+<p>どうやらzlibだそうです！</p>
+<pre class="code lang-python" data-lang="python" data-unlink><span class="synComment">#!/usr/bin/python3</span>
+<p>outを見てみると…</p>
+<pre class="code" data-lang="" data-unlink>$ cat encrypted.txt | wc -c
+<p>あっ…(察し)</p>
+<p>また <code>base64</code> してみると、どうやらこれも <code>zlib</code> みたいです。
+<p>それではさっきの<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>と組み合わせて</p>
+<pre class="code lang-sh" data-lang="sh" data-unlink><span class="synComment"># a.sh</span>
+<p>これでエラーが出るまで待ち続けましょう！</p>
+<pre class="code" data-lang="" data-unlink>base64: invalid input
+<p>エラーが出ました！ いい文字数ですね！</p>
+<pre class="code" data-lang="" data-unlink>$ cat out
+<p>どうやら、3組のpair、すなわち合計6つの数字が与えられるみたいですね。</p>
+<p>とおくと、以下の式が成り立っていることがわかります！</p>
+<p><img src="https://chart.apis.google.com/chart?cht=tx&chl=%20x_0%20" alt=" x_0 "/> がフラグですね</p>
+<p>行列の形がわかれば、あとは行列を斜めにするやつをやるだけです！
+<pre class="code lang-python" data-lang="python" data-unlink><span class="synComment">#!/usr/bin/python3</span>
+<p>しっかり<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C3%B1%B0%CC%B9%D4%CE%F3">単位行列</a>になってフラグが取れました！</p>
+<pre class="code" data-lang="" data-unlink>1 0 0 175721217420600153444809007773872697631803507409137493048703574941320093728 
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/RSA%B0%C5%B9%E6">RSA暗号</a>の <code>d</code> と encryptされたデータは教えてくれますが、 <code>N</code> をなくしてしまったみたいです！！！！！</p>
+<p><code>N</code>ないのにお前どうやって暗号化してんだよ！！！！</p>
+<p>この問題、2つ気づくことに気づけばなんと瞬殺できます</p>
+<p>ガチャガチャ遊んでいたら、負の数を入ることを発見してしまいました。 <code>-1</code> が通るならもう自明です。</p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/RSA%B0%C5%B9%E6">RSA暗号</a>の暗号化は</p>
+<pre class="code" data-lang="" data-unlink>c = m^e MOD N</pre>
+<p>復号は</p>
+<pre class="code" data-lang="" data-unlink>m = c^d MOD N</pre>
+<p>ですね。 この<code>N</code>がわからないので、復号できないという問題でした。</p>
+<p>この問題では、フラグの <code>c</code> の他に、3回まで好きな整数の <code>m</code> を入力することができます。</p>
+<p>では、 <code>m</code> に <code>-1</code> を入れたら…？</p>
+<p>通常<code>e</code>は65537とか3とかです。</p>
+<pre class="code" data-lang="" data-unlink>m = -1^e MOD N = -1 MOD N = N-1</pre>
+<p>なんと <code>N-1</code> をもらえました！！！</p>
+<p>これを <code>+1</code> して、複合してやると…</p>
+<pre class="code lang-python" data-lang="python" data-unlink><span class="synPreProc">from</span> Crypto.Util.number <span class="synPreProc">import</span> long_to_bytes
+<p>いえい！</p>
+<pre class="code" data-lang="" data-unlink>b&#39;ctf4b{f1nd_7he_p4ramet3rs}&#39;</pre>
+<p>これ、あってんのか？と思ってましたがどうやら想定解放で、周りを眺めていたら少数派っぽいです…</p>
+<p><iframe src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fkusano_k%2Fitems%2Fc1c7ebec353d0bfdf1eb" title="SECCON Beginners CTF 2019 - Qiita" class="embed-card embed-webcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;"></iframe><cite class="hatena-citation"><a href="https://qiita.com/kusano_k/items/c1c7ebec353d0bfdf1eb">qiita.com</a></cite></p>
+<p><iframe src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fzeosutt.hatenablog.com%2Fentry%2F2019%2F05%2F27%2F041427" title="SECCON Beginners CTF 2019 write-up - ゼオスTTのブログ" class="embed-card embed-blogcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;"></iframe><cite class="hatena-citation"><a href="http://zeosutt.hatenablog.com/entry/2019/05/27/041427">zeosutt.hatenablog.com</a></cite></p>
+<p>元の数字があり、 <code>nc</code> でつなぐたびに、下1/4くらいのランダムな1bitを変えて、暗号化した数字を返してくれます。
+<p><code>N</code> と <code>e</code> と <code>c</code> はわかるのですが、<code>d</code>を教えてくれません。ただの公開鍵の情報です</p>
+<p>もしこれで復号できたら、<a class="keyword" href="http://d.hatena.ne.jp/keyword/RSA%B0%C5%B9%E6">RSA暗号</a>を解読したことになります。まともに解いてられません。</p>
+<p><code>e</code>が3なので、ワンチャン 3乗した結果が <code>N</code> より小さければ 3乗根を求めるだけで解けます。</p>
+<p>... 無理でした</p>
+<p>もとの数字を <code>x</code> として、<code>i</code> bit目が変わったとすると</p>
+<p>が大量に渡されるので、なんとかして<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CF%A2%CE%A9%CA%FD%C4%F8%BC%B0">連立方程式</a>を解けないかと考えました</p>
+<p>...無理でした</p>
+<p><iframe src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fkusano_k%2Fitems%2Fc1c7ebec353d0bfdf1eb" title="SECCON Beginners CTF 2019 - Qiita" class="embed-card embed-webcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;"></iframe><cite class="hatena-citation"><a href="https://qiita.com/kusano_k/items/c1c7ebec353d0bfdf1eb">qiita.com</a></cite></p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/RSA">RSA</a>の暗号の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C0%C8%BC%E5%C0%AD">脆弱性</a>を調べていると見つけました。</p>
+<p>2つのメッセージ <code>m1</code> と <code>m2</code> の差がわかれば解けるという問題です。</p>
+<p>1024/4 = 256 bitのうち、1bit変えただけなので、差のパターン数は <code>256^2</code> そんなに多くありません。</p>
+<p>差は、 <code>xor</code> をとっているので</p>
+<pre class="code" data-lang="" data-unlink>abs((1 &lt;&lt; i) - (1 &lt;&lt; j)) or (1 &lt;&lt; i) + (1 &lt;&lt; j)</pre>
+<p>の2択です。</p>
+<p>2つの差分がわかれば、あとはその全てに対して複合するだけです。</p>
+<p>ももいろテク<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CE%A5%ED">ノロ</a><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B8%A1%BC">ジー</a>様の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BD%A1%BC%A5%B9%A5%B3%A1%BC%A5%C9">ソースコード</a>を使わせていただいて、</p>
+<p><iframe src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Finaz2.hatenablog.com%2Fentry%2F2016%2F01%2F20%2F022936" title=" SageMathを使ってCoppersmith&#39;s Attackをやってみる - ももいろテクノロジー" class="embed-card embed-blogcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;"></iframe><cite class="hatena-citation"><a href="http://inaz2.hatenablog.com/entry/2016/01/20/022936">inaz2.hatenablog.com</a></cite></p>
+<p>以下のようになりました</p>
+<pre class="code lang-python" data-lang="python" data-unlink><span class="synComment"># coppersmiths_short_pad_attack.sage</span>
+<p>あとは出てきた数字をすべてbyte文字列に戻すと…？</p>
+<p>見つかりました！</p>
+<p><span itemscope itemtype="http://schema.org/Photograph"><img src="https://cdn-ak.f.st-hatena.com/images/fotolife/k/kurenaif/20190528/20190528005152.png" alt="f:id:kurenaif:20190528005152p:plain" title="f:id:kurenaif:20190528005152p:plain" class="hatena-fotolife" itemprop="image"></span></p>
+<p>休憩時間にときました。
+<pre class="code" data-lang="" data-unlink>`File&gt;Export Objects&gt;HTTP...&gt;Packet 3193`</pre>
+<p>hexdumpの8進数なので、
+<pre class="code lang-python" data-lang="python" data-unlink><span class="synPreProc">import</span> struct
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%C9%FD%CD%A5%C0%E8%C3%B5%BA%F7">幅優先探索</a>で出来るくらいの計算量ですが、ちょっと書くのが辛かったので先人のコードをお借りしました。</p>
+<pre class="code py" data-lang="py" data-unlink>host = &#39;133.242.50.201&#39;
+<p><code>Crypto</code> たのしい！！！！！！！
+    <p class="entry-footer-section">
+    <p>会社名に関しては隠したり隠さなかったりしているが今回は念の為隠す方針にする。
+<p>基本的には逆求人(アカリク、G<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%BF%A5%A4%A5%E9%A5%B9">スタイラス</a>)を通じて会社の人事さんとつながってそこから選考～という感じ。
+<p>逆求人ベースなので、逆求人で説明するために資料を用意してそれをベースに話した。
+<p>自己アピールのトピックとしては、</p>
+<p>があり、これをさっと流しながら面接官のリアクション等を見ながら雑談をした。
+<p>面接中にも情報を色々<a class="keyword" href="http://d.hatena.ne.jp/keyword/%BB%C5%C6%FE">仕入</a>れた。
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B6%A5%B5%BB%A5%D7%A5%ED%A5%B0%A5%E9%A5%DF%A5%F3%A5%B0">競技プログラミング</a>を長くやっているので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B6%A5%B5%BB%A5%D7%A5%ED%A5%B0%A5%E9%A5%DF%A5%F3%A5%B0">競技プログラミング</a>中心で話をした。</p>
+<p>A社とかC社とかD社とかG社とかF社とか書いてるけど実際に受けた企業の頭文字とは関係ないよ</p>
+<p>プログラミングテストがあったので、気軽に受けてみたら通ってしまった。
+<p>最終面接で落ちた。
+<p>逆求人の人におすすめされたので、受けてみた。
+<p>遊びにおいでよ！と言われて遊びに行ったら面接だった。
+<p>ここに受かればここに行っていた。みんなも知ってるあの会社。
+<p>ここに受かればここに行っていた第2社。
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%BF%A1%BC%A5%F3">インターン</a>に行った会社。
+<p>最終的にここにした。
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Atcoder">Atcoder</a>をやっていたおかげで、某社を除いた会社でコーディングテストに困ることはなかった。
+<p>「〜できますか？」という曖昧な質問がよくあるが、この質問に対する答えは相対的なもので決まる。
+<p>大学の成績は一社で提出させられたけど、それ以外はまったく役に立っている感じはなかった。
+    <p class="entry-footer-section">
+<p>おそらくこのタイトルでこのブログに到達する人ははじめましてだと思います。</p>
+<p>合同誌を主催したり、<a href="https://atcoder.jp/contests/practice/tasks/practice_1">競技プログラミングの問題</a>を解いているkurenaif(f.くれなゐ)と申します。
+<p>普段はこんなブログを書いています。もし興味があれば覗いてみてください。
+<p><iframe src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fkurenaif.hatenablog.com%2Fentry%2F2018%2F11%2F17%2F220953" title="Educational Codeforces Round 53 E. Segment Sum  - くれなゐの雑記" class="embed-card embed-blogcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;"></iframe><cite class="hatena-citation"><a href="https://kurenaif.hatenablog.com/entry/2018/11/17/220953">kurenaif.hatenablog.com</a></cite></p>
+<p>自分が主催した合同誌は <a href="http://kurenaif.html.xdomain.jp/hanahudafugd/">東方花札風イラスト合同 〜幻想二十四の花かるた〜</a> と <a href="http://kurenaif.html.xdomain.jp/hanahudagd2/">東方花札合同 百華蒐集</a> です。</p>
+<p>前者の合同は両面ポストカードサイズ12枚のもので、各月に対して両面2人ずつ、その月のテーマの札をデザインしていただく合同で、後者の合同は名刺サイズ48枚で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B2%D6%BB%A5">花札</a>の各札に対して1枚ずつ割り当てて札をデザインしていただくといった合同になっています。</p>
+<p>実はここだけの話なのですが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B2%D6%BB%A5">花札</a>合同第1段の企画をした次点で第2段の予定は少し立てていました。(一定以上部数売れたり、満足する完成度のものができれば第2段をするつもりでした)</p>
+<p>他の一般的な合同誌と違い、以下の点で大きく異なっていると思います。</p>
+<p>総じて、合同主催の負担としては編集は楽ですがその他でそれ相応の負担を被ることになります。
+<p>これに関しては既存の記事が非常に優秀なので、私から言うことは特にありません。
+<p>の二点ですね。</p>
+<p><iframe src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.clipstudio.net%2Foekaki%2Farchives%2F152426" title="【合同誌を作りたい！】失敗しないための準備と原稿のまとめ方  | イラスト・マンガ描き方ナビ" class="embed-card embed-webcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;"></iframe><cite class="hatena-citation"><a href="https://www.clipstudio.net/oekaki/archives/152426">www.clipstudio.net</a></cite></p>
+<p><iframe src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fblog.kasei-san.com%2Fentry%2F2016%2F01%2F01%2F105446" title="これだけやれば大丈夫!! 合同誌を作るための主催者チェックリストを作った - kasei_sanのブログ" class="embed-card embed-blogcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;"></iframe><cite class="hatena-citation"><a href="https://blog.kasei-san.com/entry/2016/01/01/105446">blog.kasei-san.com</a></cite></p>
+<p>最低限のことを気をつけた上で、次点で気をつけなければならない点を紹介します。
+<p>文章はよく「短く・端的に」とよく言うと思います。
+<p>「わかりやすさ」と「短さ」というのは<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%EC%A1%BC%A5%C9%A5%AA%A5%D5">トレードオフ</a>の関係にあると思います。悩んだ場合は「わかりやすさ」を優先しましょう。
+<p>多くの参加者は<a class="keyword" href="http://d.hatena.ne.jp/keyword/twitter">twitter</a>のDMでの連絡を取りたい方が多いと思います。
+<p><strong>「<a class="keyword" href="http://d.hatena.ne.jp/keyword/twitter">twitter</a>のDMは<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>がキツすぎる問題」</strong></p>
+<p>が発生します。「<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>」とは<a class="keyword" href="http://d.hatena.ne.jp/keyword/twitter">twitter</a>の機能を使う窓口みたいなものなのですが、あることをすれば窓口がスパム扱いするのです。
+<p><strong>大人数の場合はメールでの連絡を推奨しましょう</strong></p>
+<p>この5%はあくまで僕の文章力です。人によって違うと思います。
+<p>誤読・誤解・勘違いをしたまま進行することを防ぐために工夫をするのも合同誌主催の仕事です。
+<p>余裕があればメッセージを共有する前に参加者に確認してもらうといいですね。</p>
+<p>以下は募集の際に設けた<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C1%A5%A7%A5%C3%A5%AF%A5%DC%A5%C3%A5%AF%A5%B9">チェックボックス</a>です。
+<p><span itemscope itemtype="http://schema.org/Photograph"><img src="https://cdn-ak.f.st-hatena.com/images/fotolife/k/kurenaif/20190102/20190102214319.png" alt="f:id:kurenaif:20190102214319p:plain" title="f:id:kurenaif:20190102214319p:plain" class="hatena-fotolife" itemprop="image"></span></p>
+<p>配置ミスはこの合同で最も気をつけなければならない点です。
+<p>そのようなDMが来ない場合はリプライとかで促します。
+<p>タイトル通りです。
+<p>最終的にウェブサーバーを借りて合同誌の宣伝をするのですから、早い間にウェブサーバーを借りて参加者のためのページを作っちゃいましょう。
+<p>ここを見ると合同の提出に関するすべてが細かな注意点を含めて書いてあります。
+<p>大きな手間ではありません。
+<p>あとは「内容を更新したのでウェブページ見てね」とDMで告知したら終わりです。
+<p><span itemscope itemtype="http://schema.org/Photograph"><img src="https://cdn-ak.f.st-hatena.com/images/fotolife/k/kurenaif/20190102/20190102215425.png" alt="f:id:kurenaif:20190102215425p:plain" title="f:id:kurenaif:20190102215425p:plain" class="hatena-fotolife" itemprop="image"></span></p>
+<p><span itemscope itemtype="http://schema.org/Photograph"><img src="https://cdn-ak.f.st-hatena.com/images/fotolife/k/kurenaif/20190102/20190102220757.png" alt="f:id:kurenaif:20190102220757p:plain" title="f:id:kurenaif:20190102220757p:plain" class="hatena-fotolife" itemprop="image"></span></p>
+<p>基本的に論文書くときと同じ心得だと思っています。誰しもが読んで誤解のない文章を書くべきです。
+<p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/448009525X/hatena-blog-22/"><img src="https://images-fe.ssl-images-amazon.com/images/I/51mVxSLPcZL._SL160_.jpg" class="hatena-asin-detail-image" alt="数学文章作法 基礎編 (ちくま学芸文庫)" title="数学文章作法 基礎編 (ちくま学芸文庫)"></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/448009525X/hatena-blog-22/">数学文章作法 基礎編 (ちくま学芸文庫)</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%B7%EB%BE%EB%B9%C0">結城浩</a></li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%C3%DE%CB%E0%BD%F1%CB%BC">筑摩書房</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2013/04/11</li><li><span class="hatena-asin-detail-label">メディア:</span> 文庫</li><li><a href="http://d.hatena.ne.jp/asin/448009525X/hatena-blog-22" target="_blank">この商品を含むブログ (32件) を見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div></p>
+<p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/4480095268/hatena-blog-22/"><img src="https://images-fe.ssl-images-amazon.com/images/I/51k1Ayd79VL._SL160_.jpg" class="hatena-asin-detail-image" alt="数学文章作法 推敲編 (ちくま学芸文庫)" title="数学文章作法 推敲編 (ちくま学芸文庫)"></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/4480095268/hatena-blog-22/">数学文章作法 推敲編 (ちくま学芸文庫)</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%B7%EB%BE%EB%B9%C0">結城浩</a></li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%C3%DE%CB%E0%BD%F1%CB%BC">筑摩書房</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2014/12/12</li><li><span class="hatena-asin-detail-label">メディア:</span> 文庫</li><li><a href="http://d.hatena.ne.jp/asin/4480095268/hatena-blog-22" target="_blank">この商品を含むブログ (15件) を見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div></p>
+<p>メッセージはtwitterDM、pixivメッセ、メールで以下のスタイルで書きました。</p>
+<pre class="code" data-lang="" data-unlink>(伝えたい内容の概要)
+<p>僕の場合文章が長くなりがちなので、構造的に内容をわけられるよう考慮した結果がこうなりました。
+<p>書いてあるとおり、作業内容を書くだけではなく、や「なぜそれが必要なのか」を付け加えます。</p>
+<p>ただただ「端的に短く」やってほしいことを書いてもらってもいいのですが、「なぜそうしなければならないか」という「冗長性」を付け加えることで、誤読のリスクを減らす役割があります。</p>
+<p>これがあるのとないのでは体感で相当な誤読が減りました。</p>
+<p>1.で詳細や理由を付け加えたことにより、文章が長くなってしまいました。この冗長性は必要なもので削ってはいけないものです。
+<p>なので、内容を端的に短く書いた目次のようなものを追加しましょう。それが</p>
+<pre class="code" data-lang="" data-unlink>1. XXXXについて
+<p>この両方を書き、番号でお互いにリンクさせることで短い箇条書きの文章と長い文章の利点の両立を図っています。</p>
+<p>あえて難しい言葉で書いてみました。
+<p>これが3番の伝えたい内容です。過去の文章で</p>
+<blockquote><p>1.で詳細や理由を付け加えたことにより</p></blockquote>
+<p>であったり</p>
+<blockquote><p>2.で目次を作りましたが</p></blockquote>
+<p>みたいに番号で他の内容を参照することができます。これが「・」の箇条書きではなく番号の箇条書きを使う理由の一つです。</p>
+<p>文章を読み終わった後、最後に自分の理解した内容を再確認します。
+<p>ここまでの内容を読んだあなたは最後に</p>
+<pre class="code" data-lang="" data-unlink>1. 詳細や理由を添えることで、誤読や勘違いを減らす
+<p>の4点が理解できたことを確認するのではないでしょうか？
+<p>最後に</p>
+<blockquote><p>以上N点、よろしくお願いします。</p></blockquote>
+<p>のように書き加えることで、何点相手に理解してほしいかを強調する文章を書いています。</p>
+<p>これがこのスタイルの文章の書き方の利点です。
+<p>1回目の反省点を活かし2回目では様々な工夫をしてかなりの誤読や誤解を減らせたと思います。
+<p>今回の合同では誤読しても問題ない部分では少しだけトラブルが起き、問題がある部分は全くトラブル等は起きなくスムーズに進行できたと自負しています。</p>
+<p>しかし、まだまだトラブルが全く起きなかったわけではないので軽微なミスも0にするようマネジメントを模索していきたいと思います。
+    <p class="entry-footer-section">
+<p>この記事は多分kosen10s<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%C9%A5%D9%A5%F3%A5%C8%A5%AB%A5%EC%A5%F3%A5%C0%A1%BC">アドベントカレンダー</a>の15日目の記事です。</p>
+<p><iframe src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fadventar.org%2Fcalendars%2F3004" title="#kosen10s Advent Calendar 2018 - Adventar" class="embed-card embed-webcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;"></iframe><cite class="hatena-citation"><a href="https://adventar.org/calendars/3004">adventar.org</a></cite></p>
+<p>今様々な便利な便利な<a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>やエディタが登場しており、わざわざ<a class="keyword" href="http://d.hatena.ne.jp/keyword/vim">vim</a>を使う必要はないのでは？という気持ちになります。
+<p>しかしながら、様々な<a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>やエディタが登場したがゆえ、環境によってそれぞれのエディタのショートカットキーを覚えなければならないという難点もあります。</p>
+<p>そのような背景の中、<a class="keyword" href="http://d.hatena.ne.jp/keyword/vim">vim</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AD%A1%BC%A5%D0%A5%A4%A5%F3%A5%C9">キーバインド</a>は多くのエディタの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B3%C8%C4%A5%B5%A1%C7%BD">拡張機能</a>として実装されており、統一された<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AD%A1%BC%A5%D0%A5%A4%A5%F3%A5%C9">キーバインド</a>として勉強するのもありかな？と思っています。
+<p>おそらく今の多くのコーディング初心者は、マウスでカーソルを合わせ、マウスホイールでスクロールし、入力するような形態を取っていることが多いと思います。</p>
+<p>そのような状態から<a class="keyword" href="http://d.hatena.ne.jp/keyword/vim">vim</a>を入門した後、"移動"と"挿入モード等の切り替え"、"保存終了"を勉強し終わったあとに、次にどうすればいいのかわからないという気持ちになると思います。この記事はその後の勉強について、少しでもその壁を突破する手助けになればと思います。</p>
+<p>この記事では大文字と小文字を区別します。注意してください。</p>
+<p><code>o</code>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CE%A1%BC%A5%DE%A5%EB%A5%E2%A1%BC%A5%C9">ノーマルモード</a>で入力すると、以下の処理を一気に行ってくれます。</p>
+<p>これらの処理を行った後、その行と次の行の間に一行空行が生まれることになります。</p>
+<p><span itemscope itemtype="http://schema.org/Photograph"><img src="https://cdn-ak.f.st-hatena.com/images/fotolife/k/kurenaif/20181222/20181222195923.gif" alt="f:id:kurenaif:20181222195923g:plain" title="f:id:kurenaif:20181222195923g:plain" class="hatena-fotolife" itemprop="image"></span></p>
+<p>また、<code>o</code>コマンドは下に空行を作るのに対し、<code>O</code>コマンドは上に空行を作ります。</p>
+<p>このコマンドは意外と酷使します。一例をいかに示します。次は<code>O</code>コマンドを使う例です。</p>
+<p><span itemscope itemtype="http://schema.org/Photograph"><img src="https://cdn-ak.f.st-hatena.com/images/fotolife/k/kurenaif/20181222/20181222200019.gif" alt="f:id:kurenaif:20181222200019g:plain" title="f:id:kurenaif:20181222200019g:plain" class="hatena-fotolife" itemprop="image"></span></p>
+<p>この記事中にもこのコマンドは大量に現れるので、しっかり頭に入れましょう。</p>
+<p>この記事の冒頭で述べた条件に入っているコマンドです。
+<p>多くの<a class="keyword" href="http://d.hatena.ne.jp/keyword/vimmer">vimmer</a>やemacserは方向キーの入力を嫌います。
+<p>おそらくご存知の通り、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CE%A1%BC%A5%DE%A5%EB%A5%E2%A1%BC%A5%C9">ノーマルモード</a>でブロックが表示されると思いますが、そのブロックの左側に文字を入力するのが<code>i</code>、右に入力するのが<code>a</code>です</p>
+<p>では挿入モードから<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CE%A1%BC%A5%DE%A5%EB%A5%E2%A1%BC%A5%C9">ノーマルモード</a>に移行し、<code>i</code>で左側に文字を挿入するとどうなるでしょうか？
+<p><span itemscope itemtype="http://schema.org/Photograph"><img src="https://cdn-ak.f.st-hatena.com/images/fotolife/k/kurenaif/20181222/20181222200056.gif" alt="f:id:kurenaif:20181222200056g:plain" title="f:id:kurenaif:20181222200056g:plain" class="hatena-fotolife" itemprop="image"></span></p>
+<p>また、<a class="keyword" href="http://d.hatena.ne.jp/keyword/vim">vim</a>ではコマンドの前に数字を入力すると、そのコマンドを数字回実行してくれます。</p>
+<p>例えば、一行削除する<code>dd</code>コマンドの前に3をつけ<code>3dd</code>のように入力すると今あるカーソルを含めて下向きに3行削除してくれます。</p>
+<p>では<code>a</code>の前に数字を入力したらどうなるでしょうか？正解はその文字が複数回入力されます
+<p><span itemscope itemtype="http://schema.org/Photograph"><img src="https://cdn-ak.f.st-hatena.com/images/fotolife/k/kurenaif/20181222/20181222200126.gif" alt="f:id:kurenaif:20181222200126g:plain" title="f:id:kurenaif:20181222200126g:plain" class="hatena-fotolife" itemprop="image"></span></p>
+<p>使用用途としては、以下の動画のようにハイフンで線を書く場合に使えます。
+<pre class="code" data-lang="" data-unlink>50a-&lt;esc&gt;&lt;esc&gt;</pre>
+<p>と入力することでハイフンの線を作っています。
+<pre class="code" data-lang="" data-unlink>3p</pre>
+<p>を入力することで、さらに3つ複製しています。</p>
+<p>他にもこういう使い方ができます:</p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B6%A5%B5%BB%A5%D7%A5%ED%A5%B0%A5%E9%A5%DF%A5%F3%A5%B0">競技プログラミング</a>ではint型に入る大きな<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C1%C7%BF%F4">素数</a>として、1e9+7がよく使われています。
+<p>先ほど紹介した<code>a</code>コマンド、そしてこの動画で使用している数字を1インクリメントする<code>ctrl+a</code>コマンドを使用することで、動画のようにこの数字を作ることができます！</p>
+<p><span itemscope itemtype="http://schema.org/Photograph"><img src="https://cdn-ak.f.st-hatena.com/images/fotolife/k/kurenaif/20181222/20181222200157.gif" alt="f:id:kurenaif:20181222200157g:plain" title="f:id:kurenaif:20181222200157g:plain" class="hatena-fotolife" itemprop="image"></span></p>
+<p>かなり<a class="keyword" href="http://d.hatena.ne.jp/keyword/vim">vim</a>特有のコマンドに思えます。
+<p>右にヒットするのが<code>f</code>、左にヒットするのが<code>F</code>です。</p>
+<p>例えば、スネークケースのように単語が<code>_</code>で区切られているような場合は、<code>f_</code>で次々右に飛ぶことが可能です。
+<p><span itemscope itemtype="http://schema.org/Photograph"><img src="https://cdn-ak.f.st-hatena.com/images/fotolife/k/kurenaif/20181222/20181222200224.gif" alt="f:id:kurenaif:20181222200224g:plain" title="f:id:kurenaif:20181222200224g:plain" class="hatena-fotolife" itemprop="image"></span></p>
+<p>スネークケースの他にも飛びたい文字の近くに特殊な文字があれば<code>f</code>で一気に飛べば方向キーを連打する回数も減らせるでしょう。
+<p><span itemscope itemtype="http://schema.org/Photograph"><img src="https://cdn-ak.f.st-hatena.com/images/fotolife/k/kurenaif/20181222/20181222200248.gif" alt="f:id:kurenaif:20181222200248g:plain" title="f:id:kurenaif:20181222200248g:plain" class="hatena-fotolife" itemprop="image"></span></p>
+<p>前ジャンプしたところに戻る機能です。何回も<code>ctrl+o</code>を入力すると、更に前へ戻ることができます。</p>
+<p>例えば以下の動画のように、includeを追加して戻ってきたいときのように使えます。
+<p>includeを追加したときに最初に紹介した<code>o</code>コマンドも使用していますね。
+<p><span itemscope itemtype="http://schema.org/Photograph"><img src="https://cdn-ak.f.st-hatena.com/images/fotolife/k/kurenaif/20181222/20181222200312.gif" alt="f:id:kurenaif:20181222200312g:plain" title="f:id:kurenaif:20181222200312g:plain" class="hatena-fotolife" itemprop="image"></span></p>
+<p>複雑な編集をするときに手放せないコマンド <code>q</code> です。
+<p>本当にいろいろな使い方があるのですが、一例を紹介します。</p>
+<p>以下の動画は、resがバグっているのでそれぞれの項をcoutしたいときの例です。<code>a</code>に</p>
+<blockquote><p>次に現れる<code>+</code>を<code>&lt;&lt; '+' &lt;&lt;</code>に変更する</p></blockquote>
+<p>処理を仕込んでおり、<code>@a</code>を繰り返し呼ぶことですべての<code>+</code>を置換しています。
+<p><span itemscope itemtype="http://schema.org/Photograph"><img src="https://cdn-ak.f.st-hatena.com/images/fotolife/k/kurenaif/20181222/20181222200405.gif" alt="f:id:kurenaif:20181222200405g:plain" title="f:id:kurenaif:20181222200405g:plain" class="hatena-fotolife" itemprop="image"></span></p>
+<p>次はスネークケースをキャメルケースに変更するケースです。
+<blockquote><p>次に現れる<code>_</code>を削除し、カーソル上にある文字を大文字に変更する</p></blockquote>
+<p>という内容が入っています。
+<p><span itemscope itemtype="http://schema.org/Photograph"><img src="https://cdn-ak.f.st-hatena.com/images/fotolife/k/kurenaif/20181222/20181222200508.gif" alt="f:id:kurenaif:20181222200508g:plain" title="f:id:kurenaif:20181222200508g:plain" class="hatena-fotolife" itemprop="image"></span></p>
+<p>ただの紹介では他の記事と同じになってしまうので、
+    <p class="entry-footer-section">
+    <p><a href="https://icpc.iisf.or.jp/2018-yokohama/">ACM-ICPC 2018 Asia Yokohama Regional</a> に参加してきました。
+<p>チーム名の由来としては、Asiaに生きたいねということで予選で確実に突破できる32位を通過したいという気持ちと、私が当時getting_over_it with bennett foddyにハマっていたのでそれらを連結させました。
+<p>同期は早生まれの人でない限りいないはずなので、ぼっちだろうなぁと思っていたらコーチでdrafearさんとか<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C2%E7%BA%E5%C2%E7%B3%D8">大阪大学</a>の友人とか、あとはスタッフ側できゅうりさんなどに会った。久々に会ったのでテンションが上った。</p>
+<p>1日目はリハーサルということでA-Dまでの、本戦とは関係ない問題を解く。
+<p>ctrlとcapsを入れ替えたかったが、コマンドをメモしておらずかつ忘れるという悲しい事件があったので、そこでかなりの時間を食った。
+<p>その夜、中華街でTikeさんが予約をとってくれた店で10名今日でご飯を食べた。
+<p>いよいよ本戦。
+<p>Bはざっくり、数列が与えられるので、そのうちから任意の <code>N</code> 個を取り出し、等差数列を作る問題で、 <code>N</code>を最大化させる問題だった。
+<p><code>log N</code>の部分はmapでかかるのだが、ココを<code>lower_bound</code>にすることでAC</p>
+<p>そのあと、残りの問題を読んでいたらC問題がACしていたので、Standingsを見つつ、<code>D</code>,<code>G</code>,<code>K</code>に注目する流れに
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D0%A5%D6%A5%EB%A5%BD%A1%BC%A5%C8">バブルソート</a>の交換回数を求めるのだが、あるindexまでは昇順ソート、あるindexまでは降順ソートみたいな感じで山形のソートを行う問題。山の頂上の位置はどこでも良くて、最小となるような位置で答えを求める。</p>
+<p>問題を見たときに、とりあえず転倒数は必要そうだったので、転倒数は <code>merge_sort</code> を使う方法と <code>BIT</code> を使う方法があることをチームメイトに伝え、今回の問題はさらに中に入っている数字が大きくないので<code>BIT</code>が適切な可能性が高いことも共有しておいた。</p>
+<p>最初は、山の頂上に位置するindexを決めたら答えが求まるかなと思ったが、その情報自体は余り大事ではないらしく考察が進まなかった。
+<p>これはBITを使うと楽なので、BITで実装。英字キーボードでのタイピングが遅いので、coromoranに実装をお願いしようと思ったが、厳しそうだったので私が担当した。→AC</p>
+<p>G問題を書いてACしている間に、K問題をtakeoさんが読んでいた。自分も読もうとしたが、疲れておりもう何も英語が読めなかったのでtakeoさんに全て教えてもらった。
+<p>さっくり問題を要約することが難しいので、問題文を読んでほしい。</p>
+<p>辞書順最大のものを求める問題で、この手の問題は貪欲に求めるとよい典型があるのでそのように求める。</p>
+<p>貪欲+判定で何も考えずに実装すると、<code>N^3logN</code> になるので、なにかしらの方法で<code>N^2 logN</code> くらいに抑える必要がある。(ちなみに、<code>N^2 log^2N</code>は通らない)</p>
+<p>ウーンと悩んでいたところ、一つのindexに注目して一つ一つ値を調べていくのに<code>N</code>かかるが、そこは二分探索で良いことに気づいたので、そこで<code>N</code>を<code>logN</code>にすることができた。
+<p>合計でABCGの4完
+<p>まさかの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B9%E2%C0%EC">高専</a>時代の後輩に遭遇。前から大学を変えると言っており、大学院で大学を変更していた。
+<p>MUSIN, PFN, <a class="keyword" href="http://d.hatena.ne.jp/keyword/BitFlyer">BitFlyer</a></p>
+<p>どこまで話していいのかわからないため詳細は省略するが、とてもおもしろかった。
+<p>チームの連携がまだ微妙に不足していた感じはあった。
+    <p class="entry-footer-section">
+<p><iframe src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fcodeforces.com%2Fcontest%2F1062%2Fproblem%2FE" title="Problem - E - Codeforces" class="embed-card embed-webcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;"></iframe><cite class="hatena-citation"><a href="http://codeforces.com/contest/1062/problem/E">codeforces.com</a></cite></p>
+<p>めええええええっちゃ問題文長いけど、実は言っていることは以下のとおりである。</p>
+<p>Treeが与えられる。また、以下のクエリが<code>Q</code>回与えられる。</p>
+<p><code>l</code>から<code>r</code>までの間のノードを一つ無視した上で、Lowest Common Ancestor(<a class="keyword" href="http://d.hatena.ne.jp/keyword/LCA">LCA</a>)を求める。
+<p>これを各クエリについて出力する</p>
+<p>まず、<code>l</code>から<code>r</code>までの<a class="keyword" href="http://d.hatena.ne.jp/keyword/LCA">LCA</a>を求めることを考えてみる。<a class="keyword" href="http://d.hatena.ne.jp/keyword/LCA">LCA</a>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%A4%A5%E9%A1%BC">オイラー</a>ツアーをして、RMQを発行すれば求めることができる。</p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/LCA">LCA</a>やRMQについては、</p>
+<p><iframe src="https://www.slideshare.net/slideshow/embed_code/key/eeGzy6mqkYYtn2" width="427" height="356" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe> <div style="margin-bottom:5px"> <strong> <a href="https://www.slideshare.net/yumainoue965/lca-and-rmq" title="LCA and RMQ ~簡潔もあるよ！~" target="_blank">LCA and RMQ ~簡潔もあるよ！~</a> </strong> from <strong><a href="https://www.slideshare.net/yumainoue965" target="_blank">Yuma Inoue</a></strong> </div><cite class="hatena-citation"><a href="https://www.slideshare.net/yumainoue965/lca-and-rmq">www.slideshare.net</a></cite></p>
+<p>や</p>
+<p><a href="http://www.creativ.xyz/abc014d-431">ABC014 D&#x300C;&#x9589;&#x8DEF;&#x300D; - RMQ&#x3092;&#x7528;&#x3044;&#x305F;LCA | &#x30AF;&#x30EA;&#x30A8;&#x30A4;&#x30C6;&#x30A3;&#x30F4;&#x306A;&#x30F4;&#x30ED;&#x30B0;</a></p>
+<p>がわかりやすい。</p>
+<p>これらの記事では、ある2つの間のノードの<a class="keyword" href="http://d.hatena.ne.jp/keyword/LCA">LCA</a>を求めているが、今回の問題で求められているのは<code>[l,r]</code>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/LCA">LCA</a>。</p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/LCA">LCA</a>の求め方を整理すると、</p>
+<blockquote><p>2つのノードに対応する2つのindexを求めて、その間にある最大のdepthを求める</p></blockquote>
+<p>という感じである。</p>
+<p>これを<code>[l,r]</code>のすべての<a class="keyword" href="http://d.hatena.ne.jp/keyword/LCA">LCA</a>に拡張すると、</p>
+<blockquote><p><code>[l,r]</code>のうち、すべての2点間に関して、2つのindexを求めて、その間にある最小のdepthを求める。</p></blockquote>
+<p>という感じになる。これを全探索すると、O(N<sup>2</sup> logN)かかってしまうので、もう少し高速化する。</p>
+<p>実は、<code>[l,r]</code>に対応するindexのうち、左端と右端のもののみを調べれば、最小のdepthを求めることができる。</p>
+<p>よって、<code>[l,r]</code>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/LCA">LCA</a>の求め方は、</p>
+<blockquote><p><code>[l,r]</code>のすべてのindexに対して、その最小値と最大値を求める。最小値のindexと最大値のindexの間にあるdepthのうち、最小のものを求める。</p></blockquote>
+<p>と言った感じでO(log N)に収めることができた。</p>
+<p>次に、depthが最大になるように頂点を一つ無視しなければならない。<a class="keyword" href="http://d.hatena.ne.jp/keyword/LCA">LCA</a>の求め方から、左端のindexに対応する頂点か、右端に対応する頂点を無視するのが良いことがわかる。(真ん中のindexに対応する頂点を除いても結局発行されるRMQは同じなので)</p>
+<p>最小のindexに対応する頂点を<code>Vl</code>、最大を<code>Vr</code>とすると、</p>
+<p>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/LCA">LCA</a>を求め、そのうちdepthが大きくなる方を出力すればAC。</p>
+<p>それぞれ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B6%E8%B4%D6">区間</a>が２つに分かれてしまったが、この２つの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B6%E8%B4%D6">区間</a>のindexをそれぞれ求めて、その最小値と最大値の間にあるdepthの最小値を同様に求めれば<a class="keyword" href="http://d.hatena.ne.jp/keyword/LCA">LCA</a>を求めることができる。</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink><span class="synType">template</span>&lt;<span class="synType">class</span> T&gt;
+    <p class="entry-footer-section">
+<p><iframe src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fcodeforces.com%2Fcontest%2F1076%2Fproblem%2FE" title="Problem - E - Codeforces" class="embed-card embed-webcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;"></iframe><cite class="hatena-citation"><a href="http://codeforces.com/contest/1076/problem/E">codeforces.com</a></cite></p>
+<p>Tree(重み付きではない)が与えられ、木の各頂点に数字を書き込む。最初は0.
+<p><code>v</code>, <code>d</code>, <code>x</code>: 頂点<code>v</code>と、その部分木のうち、<code>v</code>からの距離が<code>d</code>以内に含まれる頂点に<code>x</code>を足す。</p>
+<p>昔似た方針で解いた記憶がある。リアルタイムimosって感じ。</p>
+<p>DFSで頂点を見ていく。DFSでは、一個前の頂点で書き込んだ数字を引数として持っておく(<code>s</code>とする)。
+<pre class="code" data-lang="" data-unlink>memo[depth+d] += x</pre>
+<p>みたいな感じ。<code>x</code>を一通り足したら、memoでメモされている分を引く。(そのクエリの範囲外に到達するため)</p>
+<p>また、今見ている頂点が見終わったら、memoに足した分は無効化されるので、最後に引いて終了しないといけない。(<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BD%A1%BC%A5%B9%A5%B3%A1%BC%A5%C9">ソースコード</a>参照)</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink>vector&lt;vector&lt;<span class="synType">int</span>&gt; &gt; G;
+    <p class="entry-footer-section">
+    <p class="services">
+    <p>引用をストックしました</p>
+    <p>引用するにはまずログインしてください</p>
+    <p>引用をストックできませんでした。再度お試しください</p>
+    <p>限定公開記事のため引用できません。</p>
