@@ -1,1 +1,1 @@
-cat index.html | go run main.go
+curl https://github.com/kurenaif/go_training | go run main.go
