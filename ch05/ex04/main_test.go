@@ -29,6 +29,7 @@ func TestVisit(t *testing.T) {
 		{"<html><head></head><body><a href=\"link1\"></a><a href=\"link2\"></a></body></html>", []string{"link1", "link2"}},
 		{"<html><head></head><body><a href=\"link1\"></a><div><a href=\"link2\"></a></div></body></html>", []string{"link1", "link2"}},
 		{"<html><head></head><body><a href=\"link1\"></a><div><div><a href=\"link2\"></a></div><a href=\"link3\"></a></div></body></html>", []string{"link1", "link2", "link3"}},
+		{"<html><head></head><body><link ref=\"stylesheet\" href=\"default.css\"><a href=\"link1\"></a><img src=\"hello\"/><script src=\"hello.js\"></script></body></html>", []string{"default.css", "link1", "hello", "hello.js"}},
 	}
 
 	for _, test := range tests {
@@ -39,7 +40,7 @@ func TestVisit(t *testing.T) {
 		}
 		got := visit(nil, doc)
 		if !isSame(got, test.want) {
-			t.Errorf("%s = %q, want %q", descr, got, test.want)
+			t.Errorf("%s = %v, want %v", descr, got, test.want)
 		}
 	}
 }

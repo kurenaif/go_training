@@ -2,10 +2,13 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"golang.org/x/net/html"
 )
+
+var out io.Writer = os.Stdout
 
 func main() {
 	doc, err := html.Parse(os.Stdin)
@@ -23,7 +26,7 @@ func visit(n *html.Node) {
 		}
 	}
 	if n.Type == html.TextNode {
-		fmt.Println(n.Data)
+		fmt.Fprintln(out, n.Data)
 	}
 
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
