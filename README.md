@@ -53,3 +53,7 @@ firefoxとcurlでは `/count` は正常に動作したが、chromeでのみ、 `
 * p.70 なぜcolor.RGBA{}とcolor.RGBA()でbit数が違うのか
 * p.88 constは大きな値を持てると書いているが、JAVAなどで見られるBigInteger相当の実装なのか？ 多用するとコンパイルが遅くなるのか？
 * p.126 golangではstructの定義と関数の定義は別に書くのが通例？
+
+* p.153 nodeのnamespaceがどうしても値が入るケースが見つからない
+	* Namespace is only used by the parser, not the tokenizer.
+* p.153 textnodeの謎の改行の理由がわからん

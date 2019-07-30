@@ -2,26 +2,30 @@ package main
 
 import (
 	"fmt"
-	"net/http"
+	"io"
 	"os"
+	"strings"
 
 	"golang.org/x/net/html"
 )
 
+var out io.Writer = os.Stdout
+
 func main() {
-	for _, url := range os.Args[1:] {
-		outline(url)
-	}
+	// for _, url := range os.Args[1:] {
+	// 	outline(url)
+	// }
+	outline("hello")
 }
 
 func outline(url string) error {
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
+	// resp, err := http.Get(url)
+	// if err != nil {
+	// 	return err
+	// }
+	// defer resp.Body.Close()
 
-	doc, err := html.Parse(resp.Body)
+	doc, err := html.Parse(os.Stdin)
 	if err != nil {
 		return err
 	}
@@ -49,14 +53,39 @@ var depth int
 
 func startElement(n *html.Node) {
 	if n.Type == html.ElementNode {
-		fmt.Printf("%*s<%s>\n", depth*2, "", n.Data)
-		depth++
+		fmt.Fprintf(out, "%*s<%s", depth*2, "", n.Data)
+		for _, attr := range n.Attr {
+			fmt.Fprintf(out, " %s=%q", attr.Key, attr.Val)
+		}
+		if n.FirstChild != nil {
+			fmt.Fprintf(out, ">")
+			depth++
+		} else {
+			fmt.Fprintf(out, "/>")
+		}
+		fmt.Fprintf(out, "\n")
+	}
+
+	if n.Type == html.TextNode {
+		text := n.Data
+		text = strings.TrimSpace(text)
+		if text != "" {
+			fmt.Fprintf(out, "%*s%s\n", depth*2, "", text)
+		}
+	}
+
+	if n.Type == html.CommentNode {
+		text := n.Data
+		text = strings.TrimSpace(text)
+		if text != "" {
+			fmt.Fprintf(out, "%*s<!-- %s -->\n", depth*2, "", text)
+		}
 	}
 }
 
 func endElement(n *html.Node) {
-	if n.Type == html.ElementNode {
+	if n.FirstChild != nil && n.Type == html.ElementNode {
 		depth--
-		fmt.Printf("%*s</%s>\n", depth*2, "", n.Data)
+		fmt.Fprintf(out, "%*s</%s>\n", depth*2, "", n.Data)
 	}
 }
