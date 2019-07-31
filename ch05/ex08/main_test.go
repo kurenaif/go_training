@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -11,37 +12,28 @@ import (
 func TestVisit(t *testing.T) {
 	var tests = []struct {
 		content string
+		id      string
 		want    string
 	}{
-		{
-			`<html>
-<!-- mycomment -->
-<head>
-		</head>
-<body>
-				<img src="image.jpg" alt="kurenaif"></img>
-  <p> hello     world</p>
-  <div> <a href="link.html"> link </a> </div>
-</body>
-</html>`,
-
-			`<html>
+		{`<html>
   <!-- mycomment -->
   <head>
   </head>
   <body>
-    <img src="image.jpg" alt="kurenaif"/>
+    <img src="image.jpg" alt="kurenaif" id="findThis!"/>
     <p>
       hello     world
     </p>
     <div>
-      <a href="link.html">
+      <a href="link.html" id="findThis!">
         link
       </a>
     </div>
   </body>
 </html>
-`,
+`, // note: ２つ目のfindThisは表示しない
+			"findThis!",
+			`<img src="image.jpg" alt="kurenaif" id="findThis!">`, // 最後のslashはnodeの情報に含まれていないので表示しない
 		},
 	}
 
@@ -52,10 +44,16 @@ func TestVisit(t *testing.T) {
 			t.Error(err)
 		}
 		out = new(bytes.Buffer)
-		forEachNode(doc, startElement, endElement)
-		got := out.(*bytes.Buffer).String()
-		if got != test.want {
-			t.Errorf("\n-----------------got-----------------\n%s\n-----------------want-----------------\n%s", got, test.want)
+		got := ElementByID(doc, test.id)
+
+		gotString := fmt.Sprintf("<%s", got.Data)
+		for _, attr := range got.Attr {
+			gotString += fmt.Sprintf(" %s=%q", attr.Key, attr.Val)
+		}
+		gotString += fmt.Sprintf(">")
+
+		if gotString != test.want {
+			t.Errorf("got = %s \n want = %s", gotString, test.want)
 		}
 	}
 }

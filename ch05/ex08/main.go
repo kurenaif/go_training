@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
+	"net/http"
 	"os"
 
 	"golang.org/x/net/html"
@@ -11,38 +13,47 @@ import (
 var out io.Writer = os.Stdout
 
 func main() {
-	// for _, url := range os.Args[1:] {
-	// 	outline(url)
-	// }
-	outline("hello")
-}
-
-func outline(url string) error {
-	// resp, err := http.Get(url)
-	// if err != nil {
-	// 	return err
-	// }
-	// defer resp.Body.Close()
-
-	doc, err := html.Parse(os.Stdin)
-	if err != nil {
-		return err
+	if len(os.Args) != 2 {
+		fmt.Fprintf(os.Stderr, "usage: %s url id", os.Args[0])
+		return
 	}
 
-	res := ElementByID(doc, "kurenaif")
+	ok, err := findElementById(os.Args[1], os.Args[2])
+	if err != nil {
+		log.Fatal(err)
+	}
+	if !ok {
+		fmt.Fprintln(os.Stderr, "id not found")
+	}
+}
 
-	// print output
-	fmt.Println(res.Type, html.ElementNode)
+func findElementById(url string, id string) (bool, error) { // 見つかったかどうかを返す
+	resp, err := http.Get(url)
+	if err != nil {
+		return false, err
+	}
+	defer resp.Body.Close()
 
+	doc, err := html.Parse(resp.Body)
+	if err != nil {
+		return false, err
+	}
+
+	res := ElementByID(doc, id)
+	if res == nil {
+		return false, nil
+	}
+
+	// output html Node
 	if res.Type == html.ElementNode {
-		fmt.Fprintf(out, "%*s<%s", depth*2, "", res.Data)
+		fmt.Fprintf(out, "<%s", res.Data)
 		for _, attr := range res.Attr {
 			fmt.Fprintf(out, " %s=%q", attr.Key, attr.Val)
 		}
 		fmt.Fprintf(out, ">")
 	}
 
-	return nil
+	return true, nil
 }
 
 func forEachNode(n *html.Node, pre, post func(n *html.Node) bool) { // is skip => true
@@ -87,50 +98,3 @@ func ElementByID(doc *html.Node, id string) (idNode *html.Node) {
 	})
 	return
 }
-
-var depth int
-
-// func startElement(n *html.Node) bool {
-// 	if n.Type == html.ElementNode {
-// 		id, ok := n.Attr[attr.Key]
-// 		for _, attr := range n.Attr {
-// 			fmt.Fprintf(out, " %s=%q", attr.Key, attr.Val)
-// 		}
-// 	}
-// 	if n.Type == html.ElementNode {
-// 		fmt.Fprintf(out, "%*s<%s", depth*2, "", n.Data)
-// 		for _, attr := range n.Attr {
-// 			fmt.Fprintf(out, " %s=%q", attr.Key, attr.Val)
-// 		}
-// 		if n.FirstChild != nil {
-// 			fmt.Fprintf(out, ">")
-// 			depth++
-// 		} else {
-// 			fmt.Fprintf(out, "/>")
-// 		}
-// 		fmt.Fprintf(out, "\n")
-// 	}
-
-// 	if n.Type == html.TextNode {
-// 		text := n.Data
-// 		text = strings.TrimSpace(text)
-// 		if text != "" {
-// 			fmt.Fprintf(out, "%*s%s\n", depth*2, "", text)
-// 		}
-// 	}
-
-// 	if n.Type == html.CommentNode {
-// 		text := n.Data
-// 		text = strings.TrimSpace(text)
-// 		if text != "" {
-// 			fmt.Fprintf(out, "%*s<!-- %s -->\n", depth*2, "", text)
-// 		}
-// 	}
-// }
-
-// func endElement(n *html.Node) bool {
-// 	if n.FirstChild != nil && n.Type == html.ElementNode {
-// 		depth--
-// 		fmt.Fprintf(out, "%*s</%s>\n", depth*2, "", n.Data)
-// 	}
-// }
