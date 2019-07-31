@@ -57,3 +57,6 @@ firefoxとcurlでは `/count` は正常に動作したが、chromeでのみ、 `
 * p.153 nodeのnamespaceがどうしても値が入るケースが見つからない
 	* Namespace is only used by the parser, not the tokenizer.
 * p.153 textnodeの謎の改行の理由がわからん
+
+## WIP
+ex08
