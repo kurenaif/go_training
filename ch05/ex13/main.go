@@ -8,11 +8,38 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
+	"net/url"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"gopl.io/ch5/links"
 )
+
+var whiteHostSet = make(map[string]bool)
+
+func saveUrl(url string, savePath string) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	os.MkdirAll(filepath.Dir(savePath), 0775)
+
+	if err := ioutil.WriteFile(savePath, body, 0664); err != nil {
+		return err
+	}
+
+	return nil
+}
 
 //!+breadthFirst
 // breadthFirst calls f for each item in the worklist.
@@ -32,14 +59,28 @@ func breadthFirst(f func(item string) []string, worklist []string) {
 	}
 }
 
-//!-breadthFirst
-
-//!+crawl
-func crawl(url string) []string {
-	fmt.Println(url)
-	list, err := links.Extract(url)
+func crawl(urlString string) []string {
+	list, err := links.Extract(urlString)
 	if err != nil {
 		log.Print(err)
+		return list
+	}
+	u, err := url.Parse(urlString)
+	if err != nil {
+		log.Print(err)
+		return list
+	}
+	if _, ok := whiteHostSet[u.Host]; ok {
+		if u.Path == "" {
+			u.Path = "/"
+		}
+		path := u.Host + u.Path
+		log.Println("saving... ", path)
+		if strings.HasSuffix(path, "/") {
+			path += "index.html"
+		}
+		fmt.Println(path)
+		saveUrl(urlString, path)
 	}
 	return list
 }
@@ -48,8 +89,13 @@ func crawl(url string) []string {
 
 //!+main
 func main() {
-	// Crawl the web breadth-first,
-	// starting from the command-line arguments.
+	for _, urlString := range os.Args[1:] {
+		url, err := url.Parse(urlString)
+		if err != nil {
+			log.Print(err)
+		}
+		whiteHostSet[url.Host] = true
+	}
 	breadthFirst(crawl, os.Args[1:])
 }
 
