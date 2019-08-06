@@ -3,6 +3,7 @@ package intset
 import (
 	"bytes"
 	"fmt"
+	"go_training/ch02/ex03/popcount"
 )
 
 type IntSet struct {
@@ -22,7 +23,7 @@ func (s *IntSet) Add(x int) {
 	s.words[word] |= 1 << bit
 }
 
-func (s *IntSet) UnionWith(t *IntSet) {
+func (s *IntSet) UnionWith(t *IntSet) { // cnt fieldをもたせても良いが、どうせここでO(要素数)かかるし、毎回数える方針にする
 	for i, tword := range t.words {
 		if i < len(s.words) {
 			s.words[i] |= tword
@@ -50,4 +51,33 @@ func (s *IntSet) String() string {
 	}
 	buf.WriteByte('}')
 	return buf.String()
+}
+
+func (s *IntSet) Len() (cnt int) {
+	for _, word := range s.words {
+		cnt += popcount.PopCount(word)
+	}
+	return cnt
+}
+
+// ないものをremoveしても特に何もしない
+func (s *IntSet) Remove(x int) {
+	word, bit := x/64, uint(x%64)
+	if word <= len(s.words) {
+		s.words[word] &= (0 << bit)
+	}
+}
+
+func (s *IntSet) Clear() {
+	s.words = s.words[:0]
+}
+
+func (s *IntSet) Copy() (clone *IntSet) {
+	if s == nil {
+		clone = nil
+	} else {
+		clone.words = make([]uint64, len(s.words))
+		copy(clone.words, s.words)
+	}
+	return clone
 }
