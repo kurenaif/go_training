@@ -3,7 +3,7 @@ package intset
 import (
 	"bytes"
 	"fmt"
-	"go_training/ch02/ex03/popcount"
+	"math/bits"
 )
 
 type IntSet struct {
@@ -33,6 +33,7 @@ func (s *IntSet) UnionWith(t *IntSet) { // cnt fieldをもたせても良いが�
 	}
 }
 
+// Stringは常に小さい順に出力されることが保証されている
 func (s *IntSet) String() string {
 	var buf bytes.Buffer
 	buf.WriteByte('{')
@@ -55,7 +56,7 @@ func (s *IntSet) String() string {
 
 func (s *IntSet) Len() (cnt int) {
 	for _, word := range s.words {
-		cnt += popcount.PopCount(word)
+		cnt += bits.OnesCount64(word)
 	}
 	return cnt
 }
@@ -63,8 +64,8 @@ func (s *IntSet) Len() (cnt int) {
 // ないものをremoveしても特に何もしない
 func (s *IntSet) Remove(x int) {
 	word, bit := x/64, uint(x%64)
-	if word <= len(s.words) {
-		s.words[word] &= (0 << bit)
+	if word < len(s.words) {
+		s.words[word] &= (^(1 << bit))
 	}
 }
 
@@ -72,12 +73,12 @@ func (s *IntSet) Clear() {
 	s.words = s.words[:0]
 }
 
-func (s *IntSet) Copy() (clone *IntSet) {
+func (s *IntSet) Copy() *IntSet {
+	var clone IntSet
 	if s == nil {
-		clone = nil
-	} else {
-		clone.words = make([]uint64, len(s.words))
-		copy(clone.words, s.words)
+		return nil
 	}
-	return clone
+	clone.words = make([]uint64, len(s.words))
+	copy(clone.words, s.words)
+	return &clone
 }
