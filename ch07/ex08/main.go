@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"go_training/ch07/ex08/mulsort"
 	"os"
 	"sort"
 	"text/tabwriter"
@@ -67,41 +67,6 @@ func (x byLength) Len() int           { return len(x) }
 func (x byLength) Less(i, j int) bool { return x[i].Length < x[j].Length }
 func (x byLength) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
 
-// MultipleSortInterface
-
-type MultipleSortIntarface struct {
-	sortInterface []sort.Interface
-}
-
-func (s *MultipleSortIntarface) Add(sorter sort.Interface) {
-	s.sortInterface = append(s.sortInterface, sorter)
-}
-
-func (s MultipleSortIntarface) Len() int {
-	if s.sortInterface == nil || len(s.sortInterface) == 0 {
-		log.Printf("sort key is not setted. (may be sort is not enabled)")
-		return 0
-	}
-	return s.sortInterface[0].Len()
-}
-
-func (s MultipleSortIntarface) Less(i, j int) bool {
-	for _, sorter := range s.sortInterface {
-		if sorter.Less(i, j) != sorter.Less(j, i) { //入れ替えると結果が変わる=>iとjは等しくない
-			return sorter.Less(i, j)
-		}
-	}
-	return false
-}
-
-func (s MultipleSortIntarface) Swap(i, j int) {
-	if s.sortInterface == nil || len(s.sortInterface) == 0 {
-		log.Printf("sort key is not setted. (may be sort is not enabled)")
-		return
-	}
-	s.sortInterface[0].Swap(i, j)
-}
-
 func main() {
 	fmt.Println("byArtist:")
 	sort.Sort(byArtist(tracks))
@@ -134,18 +99,18 @@ func main() {
 
 	// 練習問題7.8 sort.Interface ver.
 	fmt.Println("\nMultipleSortIntarface:")
-	var sorter MultipleSortIntarface
-	sorter.Add(byTitle(tracks))
-	sorter.Add(byYear(tracks))
-	sorter.Add(byLength(tracks))
-	sort.Sort(sorter)
+	var sorters mulsort.MultipleSortIntarface
+	sorters.Add(byTitle(tracks))
+	sorters.Add(byYear(tracks))
+	sorters.Add(byLength(tracks))
+	sort.Sort(sorters)
 	printTracks(tracks)
 
 	// 練習問題7.8 sort.Stable ver.
 	fmt.Println("\nStableSort:")
 	sort.Sort(byYear(tracks)) //一回崩す
-	for _, sorter := range sorter.sortInterface {
-		sort.Stable(sorter)
+	for sorter := sorters.Next(); sorter != nil; sorter = sorters.Next() {
+		sort.Stable(*sorter)
 	}
 	printTracks(tracks)
 }
