@@ -1,7 +1,6 @@
 package mulsort
 
 import (
-	"log"
 	"sort"
 )
 
@@ -25,7 +24,7 @@ func (s *MultipleSortIntarface) Next() *sort.Interface {
 
 func (s MultipleSortIntarface) Len() int {
 	if s.sortInterface == nil || len(s.sortInterface) == 0 {
-		log.Printf("sort key is not setted. (may be sort is not enabled)")
+		// log.Printf("sort key is not setted. (may be sort is not enabled)")
 		return 0
 	}
 	return s.sortInterface[0].Len()
@@ -42,7 +41,7 @@ func (s MultipleSortIntarface) Less(i, j int) bool {
 
 func (s MultipleSortIntarface) Swap(i, j int) {
 	if s.sortInterface == nil || len(s.sortInterface) == 0 {
-		log.Printf("sort key is not setted. (may be sort is not enabled)")
+		// log.Printf("sort key is not setted. (may be sort is not enabled)")
 		return
 	}
 	s.sortInterface[0].Swap(i, j)
