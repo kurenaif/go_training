@@ -152,7 +152,7 @@ func printTracks(writer io.Writer, tracks []*track.Track, sortOrder []TitleOrder
 
 	titleRow := []*TitleRow{}
 	for _, title := range titles {
-		titleRow = append(titleRow, &TitleRow{title, Order(0).String(), "http://localhost:8000?" + makeQueryParameter(sortOrder, TitleOrder{title, None})})
+		titleRow = append(titleRow, &TitleRow{title, Order(0).String(), "http://localhost:8000?" + makeQueryParameter(sortOrder, TitleOrder{title, Asc})})
 	}
 	for _, order := range sortOrder {
 		titleRow[title2Num[order.Title]].SortKind = Order(order.SortKind).String()
