@@ -1,7 +1,6 @@
-package main
+package ispalindrome
 
 import (
-	"fmt"
 	"sort"
 )
 
@@ -12,8 +11,4 @@ func IsPalindrome(s sort.Interface) bool {
 		}
 	}
 	return true
-}
-
-func main() {
-	fmt.Println("Hello")
 }
