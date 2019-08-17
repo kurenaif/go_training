@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"go_training/ch07/ex13/eval"
+)
 
 func main() {
-	fmt.Println("Hello")
+	expr, _ := eval.Parse("1+2*3")
+	fmt.Println(expr.String())
 }
