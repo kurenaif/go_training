@@ -123,7 +123,9 @@ func handleConn(c net.Conn) {
 				WriteRequest(c, Request{500, "RETR request requires space splitted message"})
 				continue
 			}
-			err := client.RETR(strs[1])
+			err := client.RETR(strs[1], func() error {
+				return WriteRequest(c, Request{150, fmt.Sprintf("Opening BINARY mode data connection for %s", strs[1])})
+			})
 			if err != nil {
 				log.Print(err)
 				WriteRequest(c, Request{550, "failed RETR"})

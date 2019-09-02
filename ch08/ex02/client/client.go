@@ -137,9 +137,16 @@ func (c *Client) ChangeDirectory(path string) error {
 	return nil
 }
 
-func (c *Client) RETR(path string) error {
+func (c *Client) RETR(path string, handleResponse func() error) error {
 	err := c.Connect()
 	defer c.Close()
+	if err != nil {
+		return err
+	}
+
+	if err := handleResponse(); err != nil {
+		return err
+	}
 
 	path, err = filepath.Abs(path)
 	if err != nil {
