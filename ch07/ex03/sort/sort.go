@@ -41,5 +41,5 @@ func add(t *tree, value int) *tree {
 func (t *tree) String() string {
 	values := []int{}
 	values = appendValues(values, t)
-	return fmt.Sprintf("%v", values)
+	return fmt.Sprintf("%v", values) // %dでも良い
 }
