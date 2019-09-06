@@ -100,7 +100,7 @@ func (s *IntSet) IntersectWith(t *IntSet) {
 	// サイズが違った時の処理がめんどくさいので小さい方に合わせる
 	s.words = s.words[:mi]
 	for i, tword := range t.words {
-		if i < len(s.words) {
+		if i < len(s.words) { // ここは不要
 			s.words[i] &= tword
 		}
 	}
