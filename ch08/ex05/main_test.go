@@ -32,6 +32,18 @@ func BenchmarkMandebrotParallel8(b *testing.B) {
 	}
 }
 
+func BenchmarkMandebrotParallel16(b *testing.B) {
+	for count := 0; count < b.N; count++ {
+		calcImageParallel(16)
+	}
+}
+
+func BenchmarkMandebrotParallel32(b *testing.B) {
+	for count := 0; count < b.N; count++ {
+		calcImageParallel(32)
+	}
+}
+
 /*
                           ./+o+-       kurenaif@kurenaif-home
                   yyyyy- -yyyyyy+      OS: Ubuntu 18.10 cosmic
@@ -52,15 +64,18 @@ func BenchmarkMandebrotParallel8(b *testing.B) {
                    ````` +oo+++o\:
 						  `oo++.
 
-(*'-') < go test -bench .
+╰─(*'-') < go test -bench .                                                                                                                         22:57:09
 goos: linux
 goarch: amd64
 pkg: go_training/ch08/ex05
-BenchmarkMandebrot-8            	       5	 244936226 ns/op
-BenchmarkMandebrotParallel1-8   	       1	1851288268 ns/op
-BenchmarkMandebrotParallel2-8   	       3	 506789310 ns/op
-BenchmarkMandebrotParallel4-8   	       2	 528366808 ns/op
-BenchmarkMandebrotParallel8-8   	       3	 355952844 ns/op
+BenchmarkMandebrot-8             	       5	 223720626 ns/op
+BenchmarkMandebrotParallel1-8    	       1	3008788949 ns/op
+BenchmarkMandebrotParallel2-8    	       1	1426378146 ns/op
+BenchmarkMandebrotParallel4-8    	       3	 431482085 ns/op
+BenchmarkMandebrotParallel8-8    	       5	 311966384 ns/op
+BenchmarkMandebrotParallel16-8   	       5	 299873674 ns/op
+BenchmarkMandebrotParallel32-8   	       5	 322599834 ns/op
 PASS
-ok  	go_training/ch08/ex05	16.053s
+ok  	go_training/ch08/ex05	22.773s
+
 */
