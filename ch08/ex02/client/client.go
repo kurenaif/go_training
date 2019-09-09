@@ -129,7 +129,12 @@ func (c *Client) List() error {
 }
 
 func (c *Client) ChangeDirectory(path string) error {
-	err := c.SetDir(path)
+	currentDir, err := c.Dir()
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+	err = c.SetDir(filepath.Join(currentDir, path))
 	if err != nil {
 		log.Print(err)
 		return fmt.Errorf("451 can't read directory info\r\n")

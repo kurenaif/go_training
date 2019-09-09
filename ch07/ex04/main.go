@@ -10,7 +10,10 @@ type MyBytes struct {
 	bytes []byte
 }
 
-func (mb *MyBytes) Read(p []byte) (int, error) {
+func (mb *MyBytes) Read(p []byte) (int, error) { //EOFやる
+	if len(mb.bytes) <= mb.seek {
+		return 0, io.EOF
+	}
 	n := copy(p, mb.bytes[mb.seek:])
 	mb.seek += n
 	return n, nil

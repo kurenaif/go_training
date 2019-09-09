@@ -70,7 +70,7 @@ func (s *IntSet) Remove(x int) {
 }
 
 func (s *IntSet) Clear() {
-	s.words = s.words[:0]
+	s.words = s.words[:0] // nil代入でも良い
 }
 
 func (s *IntSet) Copy() *IntSet {

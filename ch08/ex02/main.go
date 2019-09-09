@@ -99,7 +99,7 @@ func handleConn(c net.Conn) {
 				WriteRequest(c, Request{500, "CWD request requires space splitted message"})
 				continue
 			}
-			err := client.SetDir(strs[1])
+			err := client.ChangeDirectory(strs[1])
 			if err != nil {
 				WriteRequest(c, Request{550, "Failed to change directory."})
 				continue
