@@ -55,3 +55,20 @@ func main() {
 		go handleConn(conn)
 	}
 }
+
+// 検証は手動
+/*
+aA
+	 PSAA
+	 psaA
+	 psaa
+lslSL
+	 LSLSL
+bB	 lslSL
+
+	 lslsl
+	 BB
+	 bB
+	 bb
+2019/09/09 22:04:51 done
+*/
