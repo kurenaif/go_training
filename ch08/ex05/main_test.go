@@ -50,6 +50,17 @@ func BenchmarkMandebrotParallel8(b *testing.B) {
            .o:`.syhhhhhhh/.oo++o`      GPU: GeForce GTX 970
                /osyyyyyyo++ooo+++/     RAM: 5043MiB / 15989MiB
                    ````` +oo+++o\:
-                          `oo++.
+						  `oo++.
 
+(*'-') < go test -bench .
+goos: linux
+goarch: amd64
+pkg: go_training/ch08/ex05
+BenchmarkMandebrot-8            	       5	 244936226 ns/op
+BenchmarkMandebrotParallel1-8   	       1	1851288268 ns/op
+BenchmarkMandebrotParallel2-8   	       3	 506789310 ns/op
+BenchmarkMandebrotParallel4-8   	       2	 528366808 ns/op
+BenchmarkMandebrotParallel8-8   	       3	 355952844 ns/op
+PASS
+ok  	go_training/ch08/ex05	16.053s
 */
