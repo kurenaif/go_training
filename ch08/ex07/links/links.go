@@ -17,10 +17,10 @@ func URL2Filepath(uri *url.URL) string {
 	if len(uri.Path) == 0 || uri.Path[len(uri.Path)-1] == '/' {
 		path = filepath.Join(path, "index.html")
 	}
-	if !strings.HasSuffix(path, ".html") {
+	if !strings.ContainsRune(path, '.') {
 		path += ".html"
 	}
-	return path
+	return "/" + path
 }
 
 // isMirror: falseにすると保存していないパスにはミラーリングしなくなる
@@ -35,6 +35,13 @@ func Extract(out io.Writer, uri string, isMirror bool, rootPath string) ([]strin
 	}
 	defer resp.Body.Close()
 
+	// 拡張子がないパターンの処理がめんどくさいので、一度FilePathに変換する
+	// htmlではない場合はそのまま保存する
+	if !strings.HasSuffix(URL2Filepath(baseURL), ".html") {
+		_, err := io.Copy(out, resp.Body)
+		return nil, err
+	}
+
 	doc, err := html.Parse(resp.Body)
 	if err != nil {
 		return nil, err
@@ -47,15 +54,16 @@ func Extract(out io.Writer, uri string, isMirror bool, rootPath string) ([]strin
 			fmt.Fprintf(out, "%*s<%s", depth*2, "", n.Data)
 			for _, attr := range n.Attr {
 				// linkの時
-				if n.Data == "a" && attr.Key == "href" {
+				if attr.Key == "href" || attr.Key == "src" {
 					link, err := resp.Request.URL.Parse(attr.Val)
 					if err != nil {
+						fmt.Println("ignore", attr.Val)
 						continue // ignore bad URLs
 					}
-					res = append(res, link.String())
 
 					if link.Hostname() == baseURL.Hostname() {
 						localPath := URL2Filepath(link)
+						res = append(res, link.String())
 						if isMirror { // ミラーリングする
 							fmt.Printf("%s -> %s\n", link, localPath) // debug log output
 							fmt.Fprintf(out, " %s=%q", attr.Key, localPath)
@@ -81,7 +89,11 @@ func Extract(out io.Writer, uri string, isMirror bool, rootPath string) ([]strin
 				fmt.Fprintf(out, ">")
 				depth++
 			} else {
-				fmt.Fprintf(out, "/>")
+				if n.Data == "script" {
+					fmt.Fprintf(out, "></script>")
+				} else {
+					fmt.Fprintf(out, "/>")
+				}
 			}
 			fmt.Fprintf(out, "\n")
 		}

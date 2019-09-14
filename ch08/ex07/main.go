@@ -96,7 +96,7 @@ func main() {
 				}
 				if list.cnt < *depth { // depth 3 では、3つめは見る
 					n++
-					unseenLinks <- LinkCnt{link, list.cnt, u.Hostname(), (list.cnt+1 != *depth)} //次終了する => ミラーリングを終了する
+					unseenLinks <- LinkCnt{link, list.cnt, u.Hostname(), (false)} //次終了する => ミラーリングを終了する
 				}
 			}
 		}
