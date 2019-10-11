@@ -26,8 +26,11 @@ type result struct {
 type entry struct {
 	res   result
 	ready chan struct{} // closed when res is ready
-	ok    bool          // 結果が無事に帰ってきたかを保存するためのフラグ(doneは後からcloseできるため、結果が帰った直後の状態を持っておく)
+	ok    int          // 結果が無事に帰ってきたかを保存するためのフラグ(doneは後からcloseできるため、結果が帰った直後の状態を持っておく)
 }
+// ok == 0: ng
+// ok == 1: pending
+// ok == 2: ok
 
 //!-Func
 
@@ -71,7 +74,7 @@ func isClosed(done chan struct{}) bool {
 
 func getCache(cache map[string]*entry, key string) *entry {
 	e := cache[key]
-	if e == nil || !e.ok {
+	if e == nil || e.ok == 0 {
 		return nil
 	}
 	return e
@@ -86,7 +89,7 @@ func (memo *Memo) server(f Func) {
 		e := getCache(cache, req.key)
 		if e == nil {
 			// This is the first request for this key.
-			e = &entry{ready: make(chan struct{})}
+			e = &entry{ready: make(chan struct{}), ok: 1}
 			cache[req.key] = e              // ここで代入してるけどe.okをfalseにすると実質cacheしてないことになる
 			go e.call(f, req.key, req.done) // call f(key)
 		}
@@ -99,7 +102,7 @@ func (e *entry) call(f Func, key string, done chan struct{}) {
 	e.res.value, e.res.err = f(key, done)
 	// Broadcast the ready condition.
 	if !isClosed(done) { // 値が帰ったタイミングではcloseされていない=>この値はcacheして良い。
-		e.ok = true
+		e.ok = 2
 	}
 	close(e.ready)
 }
@@ -113,7 +116,7 @@ func (e *entry) deliver(req request, memo *Memo) {
 		req.response <- result{nil, fmt.Errorf("request canceled")}
 		return
 	}
-	if !e.ok {
+	if e.ok == 0 {
 		memo.requests <- req // queueに積み直す
 		return               // req.responseには返さない
 	}
