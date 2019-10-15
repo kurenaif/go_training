@@ -153,7 +153,7 @@ func (c *Client) RETR(path string, handleResponse func() error) error {
 		return err
 	}
 
-	path, err = filepath.Abs(path)
+	path, err = filepath.Abs(filepath.Join(c.currentDir, path))
 	if err != nil {
 		return err
 	}
@@ -235,4 +235,15 @@ func (c *Client) ConnectWait() error {
 func (c *Client) TransferWait() error {
 	c.transferWait.Wait()
 	return c.transferError
+}
+
+func (c *Client) Pwd() error {
+	path, err := c.Dir()
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+	io.WriteString(c.conn, path)
+
+	return nil
 }

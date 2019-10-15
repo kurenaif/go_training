@@ -150,6 +150,13 @@ func handleConn(c net.Conn) {
 				continue
 			}
 			WriteRequest(c, Request{226, "Transfer complete"})
+		case "PWD":
+			path, err := client.Dir()
+			if err != nil {
+				WriteRequest(c, Request{550, "Failed get directory"})
+				continue
+			}
+			WriteRequest(c, Request{226, path})
 		default:
 			WriteRequest(c, Request{504, "this command is not implmeneted"})
 		}
