@@ -2,6 +2,7 @@ package unarchive
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -10,13 +11,6 @@ import (
 	"sync"
 	"sync/atomic"
 )
-
-type format struct {
-	name   string
-	magic  []byte
-	offset int
-	decode func(io.Reader) (os.FileInfo, error)
-}
 
 var (
 	formatsMu     sync.Mutex
@@ -28,11 +22,24 @@ type reader interface {
 	Peek(int) ([]byte, error)
 }
 
-func RegisterFormat(name string, magic []byte, offset int, decode func(io.Reader) (os.FileInfo, error)) {
+type UnArchveObject interface {
+	OpenWithClone(filename string) (UnArchveObject, error)
+	Next() (bool, os.FileInfo, *bytes.Buffer, error)
+	Close()
+}
+
+type format struct {
+	name   string
+	magic  []byte
+	offset int
+	uo     UnArchveObject
+}
+
+func RegisterFormat(name string, magic []byte, offset int, uo UnArchveObject) {
 	formatsMu.Lock()
 	defer formatsMu.Unlock()
 	formats, _ := atomicFormats.Load().([]format)
-	atomicFormats.Store(append(formats, format{name, magic, offset, decode}))
+	atomicFormats.Store(append(formats, format{name, magic, offset, uo}))
 }
 
 // 現在登録されているformatを列挙する(デバッグ用)
@@ -65,12 +72,19 @@ func asReader(r io.Reader) reader {
 	return bufio.NewReader(r)
 }
 
-func Decode(r io.Reader) (os.FileInfo, error) {
-	rr := asReader(r)
-	f := sniff(rr)
-	if f.decode == nil {
+// zipがio.raederに対応してないのでfilenameにした
+func Open(filename string) (UnArchveObject, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	f := sniff(asReader(file))
+
+	if f.uo == nil {
 		return nil, errors.New("unarchive: unknown format")
 	}
-	m, err := f.decode(rr)
-	return m, err
+
+	return f.uo.OpenWithClone(filename)
 }
