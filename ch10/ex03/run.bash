@@ -1,1 +1,1 @@
-curl "http://gopl.io/ch1/helloworld?go-get=1" | grep go-import
+GO111MODULE=off go run main.go . hash
