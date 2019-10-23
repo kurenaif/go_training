@@ -43,7 +43,8 @@ func CharCount(in *bufio.Reader) (map[rune]int, [utf8.UTFMax + 1]int, int) {
 }
 
 func main() {
-	counts, utflen, invalid := CharCount(bufio.NewReader(strings.NewReader("Hello World")))
+	S := "Hello World, こんにちわ せかい、д∀∃、😍😃こここここ"
+	counts, utflen, invalid := CharCount(bufio.NewReader(strings.NewReader(S)))
 
 	fmt.Printf("rune\tcount\n")
 	for c, n := range counts {
