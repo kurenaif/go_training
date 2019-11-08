@@ -151,14 +151,16 @@ func BenchmarkFastRemove(b *testing.B) {
 }
 
 func BenchmarkMapRemove(b *testing.B) {
-	s := mapset.IntSet{}
-	b.StopTimer()
-	for j := 0; j < 100000; j++ {
-		s.Add(j)
-	}
-	b.StartTimer()
-	for j := 0; j < 100000; j++ {
-		s.Remove(j)
+	for i := 0; i < b.N; i++ {
+		s := mapset.IntSet{}
+		b.StopTimer()
+		for j := 0; j < 100000; j++ {
+			s.Add(j)
+		}
+		b.StartTimer()
+		for j := 0; j < 100000; j++ {
+			s.Remove(j)
+		}
 	}
 }
 
