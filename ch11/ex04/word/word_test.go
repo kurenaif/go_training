@@ -116,6 +116,7 @@ func randomPalindromeCommaSpace(rng *rand.Rand) string {
 			r = ' '
 		}
 		runes[i] = r
+		runes[n-1-i] = r
 	}
 	return string(runes)
 }
