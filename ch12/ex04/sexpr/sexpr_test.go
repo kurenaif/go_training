@@ -97,19 +97,8 @@ func Test2(t *testing.T) {
 		t.Fatalf("Marshal failed: %v", err)
 	}
 	t.Logf("Marshal() = %s\n", data)
-	target.Flag = false
-	data, err = Marshal(target)
-	if err != nil {
-		t.Fatalf("Marshal failed: %v", err)
-	}
-	t.Logf("Marshal() = %s\n", data)
-}
 
-func Test3(t *testing.T) {
-	// c64 := 1 + 2i
-	i := 3
-
-	data, err := Marshal(i)
+	data, err = MarshalIndent(target)
 	if err != nil {
 		t.Fatalf("Marshal failed: %v", err)
 	}

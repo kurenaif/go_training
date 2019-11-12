@@ -65,11 +65,11 @@ func (p *printer) end() {
 	p.string(")")
 	p.tokens = append(p.tokens, &token{kind: ')'})
 	x := p.pop()
-	x.size += p.rtotal
-	if x.kind == ' ' {
-		p.pop().size += p.rtotal
+	x.size += p.rtotal // x.kind == の文を作りたいので、一時変数をおいている
+	if x.kind == ' ' { //一個前がスペースだったら、スペースが入る
+		p.pop().size += p.rtotal // tokensとstackは同じアドレスを共有しているので、これで変更できる && 次文字が入って、初めてsizeが有効化され、改行される可能性が生まれる？
 	}
-	if len(p.stack) == 0 {
+	if len(p.stack) == 0 { // スタックの中身をまるまる出力するイメージ
 		for _, tok := range p.tokens {
 			p.print(tok)
 		}
@@ -80,17 +80,18 @@ func (p *printer) space() {
 	last := len(p.stack) - 1
 	x := p.stack[last]
 	if x.kind == ' ' {
-		x.size += p.rtotal
+		x.size += p.rtotal       // 次文字が入って、初めてsizeが有効化され、改行される可能性が生まれる？ 連続スペースが入ると、ここは1になる
 		p.stack = p.stack[:last] // pop
 	}
-	t := &token{kind: ' ', size: -p.rtotal}
+	t := &token{kind: ' ', size: -p.rtotal} //次の文字が入るまで改行しないので、負の数を入れている？ 次の値との差分を取るイメージ
 	p.tokens = append(p.tokens, t)
 	p.stack = append(p.stack, t)
 	p.rtotal++
 }
+
 func (p *printer) print(t *token) {
 	switch t.kind {
-	case 's':
+	case 's': //単純な文字出力 スペースの時点で改行を挟んでいるので、安心して出力してOK
 		p.WriteString(t.str)
 		p.width -= len(t.str)
 	case '(':
@@ -98,11 +99,11 @@ func (p *printer) print(t *token) {
 	case ')':
 		p.indents = p.indents[:len(p.indents)-1] // pop
 	case ' ':
-		if t.size > p.width {
+		if t.size > p.width { //次のトークンが入らないときは改行してインデント
 			p.width = p.indents[len(p.indents)-1] - 1
-			fmt.Fprintf(&p.Buffer, "\n%*s", margin-p.width, "")
+			fmt.Fprintf(&p.Buffer, "\n%*s", margin-p.width, "") //改行してインデント
 		} else {
-			p.WriteByte(' ')
+			p.WriteByte(' ') // このスペースはインデントのスペースではなく、単語区切りのインデント
 			p.width--
 		}
 	}
@@ -115,6 +116,32 @@ func pretty(p *printer, v reflect.Value) error {
 	switch v.Kind() {
 	case reflect.Invalid:
 		p.string("nil")
+
+	case reflect.Float32, reflect.Float64:
+		p.stringf("%f", v.Float())
+
+	case reflect.Bool:
+		if v.Bool() {
+			p.string("t")
+		} else {
+			p.string("nil")
+		}
+
+	case reflect.Complex64, reflect.Complex128:
+		c := v.Complex()
+		p.stringf("#C(%f %f)", real(c), imag(c))
+
+	case reflect.Interface:
+		p.begin()
+		t := v.Elem().Type()
+		if t.Name() == "" { // 名前がつけられてないtypeはそのまま表示する
+			p.stringf("%q ", t)
+		} else {
+			p.stringf("\"%s.%s\" ", t.PkgPath(), t.Name())
+		}
+		pretty(p, v.Elem())
+		p.end()
+		// type output
 
 	case reflect.Int, reflect.Int8, reflect.Int16,
 		reflect.Int32, reflect.Int64:
@@ -143,7 +170,7 @@ func pretty(p *printer, v reflect.Value) error {
 		p.begin()
 		for i := 0; i < v.NumField(); i++ {
 			if i > 0 {
-				p.space()
+				p.space() // 改行を実装しようとしたが、rtotalが無理
 			}
 			p.begin()
 			p.string(v.Type().Field(i).Name)
