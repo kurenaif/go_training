@@ -16,7 +16,7 @@ import (
 // Marshal encodes a Go value in S-expression form.
 func Marshal(v interface{}) ([]byte, error) {
 	var buf bytes.Buffer
-	if err := encode(&buf, reflect.ValueOf(v)); err != nil {
+	if err := encode(&buf, reflect.ValueOf(v), 0); err != nil {
 		return nil, err
 	}
 	return buf.Bytes(), nil
@@ -26,13 +26,10 @@ func Marshal(v interface{}) ([]byte, error) {
 
 // encode writes to buf an S-expression representation of v.
 //!+encode
-func encode(buf *bytes.Buffer, v reflect.Value) error {
+func encode(buf *bytes.Buffer, v reflect.Value, leftSpace int) error {
 	switch v.Kind() {
 	case reflect.Invalid:
 		buf.WriteString("nil")
-
-	// ----------------------------------------------------------------------------------------------------
-	// ex 12.3
 
 	case reflect.Float32, reflect.Float64:
 		fmt.Fprintf(buf, "%f", v.Float())
@@ -48,22 +45,6 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 			fmt.Fprintf(buf, "nil")
 		}
 
-	case reflect.Interface:
-		fmt.Fprintf(buf, "(")
-		// type output
-		t := v.Elem().Type()
-		if t.Name() == "" { // 名前がつけられてないtypeはそのまま表示する
-			fmt.Fprintf(buf, "%q ", t)
-		} else {
-			fmt.Fprintf(buf, "\"%s.%s\" ", t.PkgPath(), t.Name()) //一意ではないとはこういうことか？
-		}
-		// value output
-		if err := encode(buf, v.Elem()); err != nil {
-			return err
-		}
-		fmt.Fprintf(buf, ")")
-	// ex 12.3
-	// ----------------------------------------------------------------------------------------------------
 	case reflect.Int, reflect.Int8, reflect.Int16,
 		reflect.Int32, reflect.Int64:
 		fmt.Fprintf(buf, "%d", v.Int())
@@ -77,6 +58,18 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 
 	case reflect.Ptr:
 		return encode(buf, v.Elem())
+
+	case reflect.Interface:
+		buf.WriteByte('(')
+		// type output
+		t := v.Elem().Type()
+		if t.Name() == "" { // 名前がつけられてないtypeはそのまま表示する
+			fmt.Fprintf(buf, "%q ", t)
+		} else {
+			fmt.Fprintf(buf, "\"%s.%s\" ", t.PkgPath(), t.Name()) //一意ではないとはこういうことか？
+		}
+		// value output
+		buf.WriteByte(')')
 
 	case reflect.Array, reflect.Slice: // (value ...)
 		buf.WriteByte('(')
