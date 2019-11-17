@@ -112,15 +112,6 @@ func Test2(t *testing.T) {
 	if !reflect.DeepEqual(temp, target) {
 		t.Fatalf("\n-----------------------------------------------------------\nexpect:\n%v\ngot:\n%v\n--------------------------------------------------\n", target, temp)
 	}
-
-	temp = S{}
-	err = Unmarshal(data, temp)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !reflect.DeepEqual(temp, target) {
-		t.Fatalf("\n-----------------------------------------------------------\nexpect:\n%v\ngot:\n%v\n--------------------------------------------------\n", target, temp)
-	}
 }
 
 func Test3(t *testing.T) {
