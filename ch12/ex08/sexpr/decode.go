@@ -10,10 +10,33 @@ package sexpr
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"reflect"
 	"strconv"
 	"text/scanner"
 )
+
+type Decoder struct {
+	r io.Reader
+}
+
+func NewDecoder(r io.Reader) *Decoder {
+	return &Decoder{r}
+}
+
+func (dec *Decoder) Decode(out interface{}) (err error) {
+	lex := &lexer{scan: scanner.Scanner{Mode: scanner.GoTokens}}
+	lex.scan.Init(dec.r)
+	lex.next() // get the first token
+	defer func() {
+		// NOTE: this is not an example of ideal error handling.
+		if x := recover(); x != nil {
+			err = fmt.Errorf("error at %s: %v", lex.scan.Position, x)
+		}
+	}()
+	read(lex, reflect.ValueOf(out).Elem())
+	return nil
+}
 
 //!+Unmarshal
 // Unmarshal parses S-expression data and populates the variable
@@ -84,6 +107,11 @@ func read(lex *lexer, v reflect.Value) {
 			lex.next()
 			return
 		}
+		if lex.text() == "t" {
+			v.SetBool(true)
+			lex.next()
+			return
+		}
 	case scanner.String:
 		s, _ := strconv.Unquote(lex.text()) // NOTE: ignoring errors
 		v.SetString(s)
@@ -94,10 +122,26 @@ func read(lex *lexer, v reflect.Value) {
 		v.SetInt(int64(i))
 		lex.next()
 		return
+	case scanner.Float:
+		f, _ := strconv.ParseFloat(lex.text(), 64) // NOTE: ignoring errors
+		v.SetFloat(float64(f))
+		lex.next()
+		return
 	case '(':
 		lex.next()
 		readList(lex, v)
 		lex.next() // consume ')'
+		return
+	case '#':
+		lex.next() // '#'
+		lex.next() // consume 'C'
+		lex.next() // consume '('
+		real, _ := strconv.ParseFloat(lex.text(), 64)
+		lex.next() // real
+		imag, _ := strconv.ParseFloat(lex.text(), 64)
+		lex.next() // consume ')'
+		v.SetComplex(complex(real, imag))
+		lex.next()
 		return
 	}
 	panic(fmt.Sprintf("unexpected token %q", lex.text()))

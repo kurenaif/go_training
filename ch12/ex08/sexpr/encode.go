@@ -9,21 +9,8 @@ package sexpr
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"reflect"
 )
-
-type Encoder struct {
-	w io.Writer
-}
-
-func NewEncoder(w io.Writer) *Encoder {
-	return &Encoder{w}
-}
-
-func (enc *Encoder) Encode(v interface{}) error {
-	return encode(enc.w, reflect.ValueOf(v))
-}
 
 //!+Marshal
 // Marshal encodes a Go value in S-expression form.
@@ -39,10 +26,10 @@ func Marshal(v interface{}) ([]byte, error) {
 
 // encode writes to buf an S-expression representation of v.
 //!+encode
-func encode(buf io.Writer, v reflect.Value) error {
+func encode(buf *bytes.Buffer, v reflect.Value) error {
 	switch v.Kind() {
 	case reflect.Invalid:
-		fmt.Fprint(buf, "nil")
+		buf.WriteString("nil")
 
 	// ----------------------------------------------------------------------------------------------------
 	// ex 12.3
@@ -92,48 +79,48 @@ func encode(buf io.Writer, v reflect.Value) error {
 		return encode(buf, v.Elem())
 
 	case reflect.Array, reflect.Slice: // (value ...)
-		fmt.Fprint(buf, "(")
+		buf.WriteByte('(')
 		for i := 0; i < v.Len(); i++ {
 			if i > 0 {
-				fmt.Fprint(buf, " ")
+				buf.WriteByte(' ')
 			}
 			if err := encode(buf, v.Index(i)); err != nil {
 				return err
 			}
 		}
-		fmt.Fprint(buf, ")")
+		buf.WriteByte(')')
 
 	case reflect.Struct: // ((name value) ...)
-		fmt.Fprint(buf, "(")
+		buf.WriteByte('(')
 		for i := 0; i < v.NumField(); i++ {
 			if i > 0 {
-				fmt.Fprint(buf, " ")
+				buf.WriteByte(' ')
 			}
 			fmt.Fprintf(buf, "(%s ", v.Type().Field(i).Name)
 			if err := encode(buf, v.Field(i)); err != nil {
 				return err
 			}
-			fmt.Fprint(buf, ")")
+			buf.WriteByte(')')
 		}
-		fmt.Fprint(buf, ")")
+		buf.WriteByte(')')
 
 	case reflect.Map: // ((key value) ...)
-		fmt.Fprint(buf, "(")
+		buf.WriteByte('(')
 		for i, key := range v.MapKeys() {
 			if i > 0 {
-				fmt.Fprint(buf, " ")
+				buf.WriteByte(' ')
 			}
-			fmt.Fprint(buf, "(")
+			buf.WriteByte('(')
 			if err := encode(buf, key); err != nil {
 				return err
 			}
-			fmt.Fprint(buf, " ")
+			buf.WriteByte(' ')
 			if err := encode(buf, v.MapIndex(key)); err != nil {
 				return err
 			}
-			fmt.Fprint(buf, ")")
+			buf.WriteByte(')')
 		}
-		fmt.Fprint(buf, ")")
+		buf.WriteByte(')')
 
 	default: // float, complex, bool, chan, func, interface
 		return fmt.Errorf("unsupported type: %s", v.Type())

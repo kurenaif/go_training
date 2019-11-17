@@ -67,15 +67,6 @@ func Test(t *testing.T) {
 		t.Fatal("not equal")
 	}
 
-	var movie2 Movie
-	err = NewDecoder(bytes.NewReader(data)).Decode(&movie2)
-	if err != nil {
-		t.Fatalf("err expect nil, got %v", err)
-	}
-	if !reflect.DeepEqual(movie2, strangelove) {
-		t.Fatalf("\n-----------------------------------------------------------\nexpect:\n%v\ngot:\n%v\n--------------------------------------------------\n", movie, strangelove)
-	}
-
 	// Pretty-print it:
 	data, err = MarshalIndent(strangelove)
 	if err != nil {
@@ -86,39 +77,120 @@ func Test(t *testing.T) {
 
 func Test2(t *testing.T) {
 	type S struct {
-		Title string
-		Flag  bool
-		C64   complex64
-		C128  complex128
-		F32   float32
-		F64   float64
-		// interface は無理っぽい
+		Title  string
+		Flag   bool
+		c64    complex64
+		c128   complex128
+		f32    float32
+		f64    float64
+		itArr  interface{}
+		itType interface{}
 	}
 
 	type MyType string
 
-	target := S{"Hello", true, 64 + 1i, 128 + 2i, 32.0, 64.0}
+	var mt MyType
+	mt = "MyType_desu"
+
+	target := S{"Hello", true, 64 + 1i, 128 + 2i, 32.0, 64.0, []int{1, 2, 3}, mt}
 	data, err := Marshal(target)
 	if err != nil {
 		t.Fatalf("Marshal failed: %v", err)
 	}
 	t.Logf("Marshal() = %s\n", data)
+	target.Flag = false
+	data, err = Marshal(target)
+	if err != nil {
+		t.Fatalf("Marshal failed: %v", err)
+	}
+	t.Logf("Marshal() = %s\n", data)
+}
 
-	var temp S
-	err = NewDecoder(bytes.NewReader(data)).Decode(&temp)
+func TestStream(t *testing.T) {
+	type Movie struct {
+		Title, Subtitle string
+		Year            int
+		Actor           map[string]string
+		Oscars          []string
+		Sequel          *string
+	}
+	strangelove := Movie{
+		Title:    "Dr. Strangelove",
+		Subtitle: "How I Learned to Stop Worrying and Love the Bomb",
+		Year:     1964,
+		Actor: map[string]string{
+			"Dr. Strangelove":            "Peter Sellers",
+			"Grp. Capt. Lionel Mandrake": "Peter Sellers",
+			"Pres. Merkin Muffley":       "Peter Sellers",
+			"Gen. Buck Turgidson":        "George C. Scott",
+			"Brig. Gen. Jack D. Ripper":  "Sterling Hayden",
+			`Maj. T.J. "King" Kong`:      "Slim Pickens",
+		},
+		Oscars: []string{
+			"Best Actor (Nomin.)",
+			"Best Adapted Screenplay (Nomin.)",
+			"Best Director (Nomin.)",
+			"Best Picture (Nomin.)",
+		},
+	}
+
+	// Encode it
+	dataBuffer := new(bytes.Buffer)
+	err := NewEncoder(dataBuffer).Encode(strangelove)
+	if err != nil {
+		t.Fatalf("Marshal failed: %v", err)
+	}
+	t.Logf("Marshal() = %s\n", dataBuffer)
+	data := dataBuffer.Bytes()
+
+	// Decode it
+	var movie Movie
+	if err := Unmarshal(data, &movie); err != nil {
+		t.Fatalf("Unmarshal failed: %v", err)
+	}
+	t.Logf("Unmarshal() = %+v\n", movie)
+
+	// Check equality.
+	if !reflect.DeepEqual(movie, strangelove) {
+		t.Fatal("not equal")
+	}
+
+	// Pretty-print it:
+	data, err = MarshalIndent(strangelove)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(temp, target) {
-		t.Fatalf("\n-----------------------------------------------------------\nexpect:\n%v\ngot:\n%v\n--------------------------------------------------\n", target, temp)
-	}
+	t.Logf("MarshalIdent() = %s\n", data)
 }
 
-func Test3(t *testing.T) {
-	// c64 := 1 + 2i
-	i := 3
+func TestStream2(t *testing.T) {
+	type S struct {
+		Title  string
+		Flag   bool
+		C64    complex64
+		C128   complex128
+		F32    float32
+		F64    float64
+		ItArr  interface{}
+		ItType interface{}
+	}
 
-	data, err := Marshal(i)
+	type MyType string
+
+	var mt MyType
+	mt = "MyType_desu"
+
+	target := S{"Hello", true, 64 + 1i, 128 + 2i, 32.0, 64.0, []int{1, 2, 3}, mt}
+	dataBuffer := new(bytes.Buffer)
+	err := NewEncoder(dataBuffer).Encode(target)
+	if err != nil {
+		t.Fatalf("Marshal failed: %v", err)
+	}
+	data := dataBuffer.Bytes()
+
+	t.Logf("Marshal() = %s\n", data)
+	target.Flag = false
+	data, err = Marshal(target)
 	if err != nil {
 		t.Fatalf("Marshal failed: %v", err)
 	}
