@@ -1,5 +1,4 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
-// Copyright © 2019 kurenaif
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 package equal
@@ -35,14 +34,8 @@ func TestEqual(t *testing.T) {
 	}{
 		// basic types
 		{1, 1, true},
-		{1, 2, false},                                 // different values
-		{1, 1.0, false},                               // different types
-		{1.0, 1.0 + 1e-9, false},                      // partialEq
-		{1.0, 1.0 + 1e-9 - 1e-10, true},               // partialEq
-		{1.0 + 1.0i, 1.0 + 1.0i, true},                // partialEq
-		{1.0 + 1.0i, 1.0 + 1e-9 + 1.0i, false},        // partialEq
-		{1.0 + 1.0i, 1.0 + 1e-9 - 1e-10 + 1.0i, true}, // partialEq
-		{1.0 + 1.0i, 1.0 + 1e-9 - 1e-10 + 1.0i + 1e-9i - 1e-10i, false}, // partialEq
+		{1, 2, false},   // different values
+		{1, 1.0, false}, // different types
 		{"foo", "foo", true},
 		{"foo", "bar", false},
 		{mystring("foo"), "foo", false}, // different types
