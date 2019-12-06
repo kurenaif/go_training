@@ -99,3 +99,21 @@ func Example_equal() {
 	// true
 	// true
 }
+
+func Example2_equal() {
+	type Node struct {
+		left  *Node
+		right *Node
+	}
+	var n2 Node
+	var n Node
+	n.left = &n2
+	n.right = &n2
+
+	//!+
+	fmt.Println(IsCycle(n))
+	//!-
+
+	// Output:
+	// false
+}

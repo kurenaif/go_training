@@ -30,6 +30,7 @@ func isCycle(x reflect.Value, seen map[ptrType]bool) bool {
 			return true // already seen
 		}
 		seen[c] = true
+		defer func() { seen[c] = false }()
 	}
 
 	//!-cyclecheck
